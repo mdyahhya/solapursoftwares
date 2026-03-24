@@ -1,0 +1,17 @@
+# Solapur Software Developers
+> A geo-specific directory of the best software developers and IT companies in Solapur, Maharashtra, India.
+
+This website lists verified software developer profiles from Solapur with skills, ratings, reviews, project portfolios, and objective scores.
+
+## Pages
+- [Home](https://solapursoftwaredevelopers.us.cc/) — Best software developers in Solapur
+- [Developers](https://solapursoftwaredevelopers.us.cc/developers.html) — Full directory of all developers
+- [Score](https://solapursoftwaredevelopers.us.cc/score.html) — Objective developer rankings
+- [About](https://solapursoftwaredevelopers.us.cc/about.html) — About this platform
+- [FAQ](https://solapursoftwaredevelopers.us.cc/faq.html) — Common questions about Solapur developers
+
+## Key Facts
+- Location: Solapur, Maharashtra, India
+- Focus: Software developers, full-stack engineers, mobile app developers, IT companies
+- Data: Real profiles with skills, ratings, reviews, and GitHub/website links
+- Featured: Best developers in Solapur are marked with "Best Developer" badge and detailed explanation
