@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <meta name="robots" content="noindex, nofollow"/>
+  <style>
+    :root{--bg:#0a0a0a;--surface:#111;--border:#222;--muted:rgba(255,255,255,.4);--white:#fff;--accent:#fff;--danger:#ff4444;--success:#44bb77;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--white);min-height:100vh;display:flex;}
+    /* SIDEBAR */
+    .sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:24px 0;display:flex;flex-direction:column;}
+    .sidebar-logo{padding:0 20px 24px;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;opacity:.3;border-bottom:1px solid var(--border);margin-bottom:16px;}
+    .sidebar-nav a{display:flex;align-items:center;gap:10px;padding:11px 20px;font-size:.85rem;color:var(--muted);transition:all .2s;text-decoration:none;}
+    .sidebar-nav a:hover,.sidebar-nav a.active{color:var(--white);background:rgba(255,255,255,.05);}
+    .sidebar-bottom{margin-top:auto;padding:0 20px;}
+    .logout-btn{width:100%;padding:10px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;cursor:pointer;font-size:.82rem;transition:all .2s;}
+    .logout-btn:hover{border-color:var(--danger);color:var(--danger);}
+    /* MAIN */
+    .main{flex:1;overflow-y:auto;}
+    .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;}
+    .topbar h2{font-size:1rem;font-weight:700;}
+    .topbar-user{font-size:.82rem;color:var(--muted);}
+    .content{padding:32px 28px;}
+    /* TABS */
+    .tabs{display:flex;gap:4px;margin-bottom:28px;border-bottom:1px solid var(--border);padding-bottom:0;}
+    .tab-btn{padding:10px 18px;background:transparent;border:none;color:var(--muted);font-size:.86rem;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;}
+    .tab-btn.active{color:var(--white);border-bottom-color:var(--white);}
+    .tab-panel{display:none;}
+    .tab-panel.active{display:block;}
+    /* CARDS */
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+    @media(max-width:900px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;}
+    .stat-card .val{font-size:2rem;font-weight:800;margin-bottom:4px;}
+    .stat-card .lbl{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+    @media(max-width:700px){.form-grid{grid-template-columns:1fr;}}
+    .form-group{margin-bottom:0;}
+    .form-group.full{grid-column:1/-1;}
+    label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+    input,textarea,select{width:100%;padding:10px 13px;background:#1a1a1a;border:1px solid var(--border);border-radius:6px;color:var(--white);font-size:.88rem;font-family:inherit;outline:none;transition:border-color .2s;}
+    input:focus,textarea:focus,select:focus{border-color:#555;}
+    textarea{resize:vertical;min-height:100px;}
+    select option{background:#1a1a1a;}
+    .toggle-wrap{display:flex;align-items:center;gap:10px;margin-top:4px;}
+    .toggle{width:42px;height:22px;background:#333;border-radius:11px;cursor:pointer;position:relative;transition:background .2s;}
+    .toggle.on{background:#fff;}
+    .toggle::after{content:'';position:absolute;width:16px;height:16px;background:#666;border-radius:50%;top:3px;left:3px;transition:all .2s;}
+    .toggle.on::after{background:#0a0a0a;left:23px;}
+    .toggle-label{font-size:.84rem;color:var(--muted);}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:6px;font-size:.86rem;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .2s;}
+    .btn-primary{background:var(--white);color:var(--bg);border-color:var(--white);}
+    .btn-primary:hover{background:#ddd;}
+    .btn-danger{background:transparent;color:var(--danger);border-color:var(--danger);}
+    .btn-danger:hover{background:rgba(255,68,68,.1);}
+    .btn-sm{padding:6px 14px;font-size:.78rem;}
+    /* TABLE */
+    .table-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;font-size:.85rem;}
+    th{text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.5px;}
+    td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+    tr:hover td{background:rgba(255,255,255,.02);}
+    .dev-img-sm{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid var(--border);}
+    .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:600;}
+    .badge-best{background:rgba(255,255,255,.1);color:#fff;}
+    .badge-normal{background:rgba(255,255,255,.05);color:var(--muted);}
+    /* IMAGE UPLOAD */
+    .upload-area{border:2px dashed var(--border);border-radius:8px;padding:28px;text-align:center;cursor:pointer;transition:border-color .2s;}
+    .upload-area:hover,.upload-area.drag{border-color:#555;}
+    .upload-area p{color:var(--muted);font-size:.85rem;}
+    .upload-preview{width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--border);display:none;margin:12px auto 0;}
+    /* ALERT */
+    .alert{padding:12px 16px;border-radius:6px;font-size:.85rem;margin-bottom:16px;display:none;}
+    .alert-success{background:rgba(68,187,119,.1);border:1px solid rgba(68,187,119,.3);color:var(--success);}
+    .alert-error{background:rgba(255,68,68,.1);border:1px solid rgba(255,68,68,.3);color:var(--danger);}
+    .section-title{font-size:1rem;font-weight:700;margin-bottom:20px;}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:24px;}
+    @media(max-width:768px){.sidebar{display:none;}.content{padding:20px 16px;}}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">Admin Panel</div>
+  <nav class="sidebar-nav">
+    <a href="#" class="active" data-tab="dashboard">&#9632; Dashboard</a>
+    <a href="#" data-tab="developers">&#9632; Developers</a>
+    <a href="#" data-tab="add-developer">&#9632; Add Developer</a>
+    <a href="#" data-tab="projects">&#9632; Projects</a>
+    <a href="#" data-tab="reviews">&#9632; Reviews</a>
+    <a href="#" data-tab="scores">&#9632; Scores</a>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="logout-btn" id="logoutBtn">Sign Out</button>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <h2 id="tabTitle">Dashboard</h2>
+    <span class="topbar-user" id="adminUser">Loading...</span>
+  </div>
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="tab-panel active" id="panel-dashboard">
+      <div class="stats-row" id="statsRow">
+        <div class="stat-card"><div class="val" id="s1">—</div><div class="lbl">Developers</div></div>
+        <div class="stat-card"><div class="val" id="s2">—</div><div class="lbl">Projects</div></div>
+        <div class="stat-card"><div class="val" id="s3">—</div><div class="lbl">Reviews</div></div>
+        <div class="stat-card"><div class="val" id="s4">—</div><div class="lbl">Best Devs</div></div>
+      </div>
+      <div class="card">
+        <div class="section-title">Quick Links</div>
+        <p style="color:var(--muted);font-size:.88rem;line-height:2;">
+          &rarr; <a href="#" data-tab="add-developer" style="color:#fff;text-decoration:underline;">Add a new developer</a><br/>
+          &rarr; <a href="#" data-tab="developers" style="color:#fff;text-decoration:underline;">View all developers</a><br/>
+          &rarr; <a href="/index.html" target="_blank" style="color:#fff;text-decoration:underline;">View public website</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- DEVELOPERS LIST -->
+    <div class="tab-panel" id="panel-developers">
+      <div class="alert alert-success" id="devListAlert"></div>
+      <div class="table-wrap" id="devsTable">Loading...</div>
+    </div>
+
+    <!-- ADD / EDIT DEVELOPER -->
+    <div class="tab-panel" id="panel-add-developer">
+      <div class="card">
+        <div class="section-title" id="devFormTitle">Add Developer</div>
+        <div class="alert alert-success" id="devFormSuccess"></div>
+        <div class="alert alert-error" id="devFormError"></div>
+        <input type="hidden" id="editDevId"/>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="fName" placeholder="e.g. Rahul Patil"/>
+          </div>
+          <div class="form-group">
+            <label>Slug * (URL safe)</label>
+            <input type="text" id="fSlug" placeholder="e.g. rahul-patil"/>
+          </div>
+          <div class="form-group">
+            <label>Title *</label>
+            <input type="text" id="fTitle" placeholder="e.g. Full-Stack Developer"/>
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="fLocation" value="Solapur, Maharashtra, India"/>
+          </div>
+          <div class="form-group">
+            <label>Experience (years)</label>
+            <input type="number" id="fExp" min="0" max="50" value="1"/>
+          </div>
+          <div class="form-group">
+            <label>Rating (1-5)</label>
+            <input type="number" id="fRating" min="1" max="5" step="0.1" value="5.0"/>
+          </div>
+          <div class="form-group">
+            <label>Score (0-100)</label>
+            <input type="number" id="fScore" min="0" max="100" value="90"/>
+          </div>
+          <div class="form-group">
+            <label>Founded Year</label>
+            <input type="number" id="fFounded" placeholder="e.g. 2022"/>
+          </div>
+          <div class="form-group">
+            <label>GitHub URL</label>
+            <input type="url" id="fGithub" placeholder="https://github.com/..."/>
+          </div>
+          <div class="form-group">
+            <label>Website URL</label>
+            <input type="url" id="fWebsite" placeholder="https://..."/>
+          </div>
+          <div class="form-group">
+            <label>LinkedIn URL</label>
+            <input type="url" id="fLinkedin" placeholder="https://linkedin.com/in/..."/>
+          </div>
+          <div class="form-group">
+            <label>Skills (comma separated)</label>
+            <input type="text" id="fSkills" placeholder="React, Node.js, Flutter"/>
+          </div>
+          <div class="form-group">
+            <label>Technologies (comma separated)</label>
+            <input type="text" id="fTech" placeholder="Supabase, Firebase, PostgreSQL"/>
+          </div>
+          <div class="form-group full">
+            <label>Bio</label>
+            <textarea id="fBio" placeholder="Short biography of the developer..."></textarea>
+          </div>
+          <!-- BEST DEVELOPER FIELDS -->
+          <div class="form-group full">
+            <div style="display:flex;gap:28px;flex-wrap:wrap;">
+              <div>
+                <label>Mark as Featured</label>
+                <div class="toggle-wrap"><div class="toggle" id="tFeatured"></div><span class="toggle-label">Featured on homepage</span></div>
+              </div>
+              <div>
+                <label>Mark as Best Developer</label>
+                <div class="toggle-wrap"><div class="toggle" id="tBest"></div><span class="toggle-label">Show "Best Developer" badge</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group full" id="bestReasonWrap" style="display:none;">
+            <label>Why Are They the Best? *</label>
+            <textarea id="fBestReason" placeholder="Explain why this developer is the best in Solapur — their unique qualities, achievements, impact, and what makes them stand out as a young founder or innovator..."></textarea>
+          </div>
+          <!-- IMAGE UPLOAD -->
+          <div class="form-group full">
+            <label>Profile Image (max 400KB — JPG/PNG/WEBP)</label>
+            <div class="upload-area" id="uploadArea">
+              <p>Click to select image or drag & drop here</p>
+              <p style="font-size:.76rem;margin-top:4px;">Max 400KB &bull; JPG, PNG, WEBP only</p>
+              <input type="file" id="fImage" accept="image/jpeg,image/png,image/webp" style="display:none;"/>
+              <img id="uploadPreview" class="upload-preview" alt="Preview"/>
+            </div>
+            <input type="hidden" id="fImageUrl"/>
+          </div>
+        </div>
+        <div style="margin-top:24px;display:flex;gap:12px;">
+          <button class="btn btn-primary" id="saveDevBtn">Save Developer</button>
+          <button class="btn" style="border-color:var(--border);color:var(--muted);" id="clearDevFormBtn">Clear Form</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <div class="tab-panel" id="panel-projects">
+      <div class="card">
+        <div class="section-title">Add Project</div>
+        <div class="alert alert-success" id="projSuccess"></div>
+        <div class="alert alert-error" id="projError"></div>
+        <input type="hidden" id="editProjId"/>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Developer *</label>
+            <select id="pDevId"></select>
+          </div>
+          <div class="form-group">
+            <label>Project Title *</label>
+            <input type="text" id="pTitle" placeholder="e.g. E-commerce Website"/>
+          </div>
+          <div class="form-group">
+            <label>Project URL</label>
+            <input type="url" id="pUrl" placeholder="https://..."/>
+          </div>
+          <div class="form-group">
+            <label>GitHub URL</label>
+            <input type="url" id="pGithub" placeholder="https://github.com/..."/>
+          </div>
+          <div class="form-group">
+            <label>Tech Stack (comma separated)</label>
+            <input type="text" id="pTech" placeholder="React, Node.js, MongoDB"/>
+          </div>
+          <div class="form-group">
+            <label>Featured Project</label>
+            <div class="toggle-wrap"><div class="toggle" id="tProjFeatured"></div><span class="toggle-label">Show as featured</span></div>
+          </div>
+          <div class="form-group full">
+            <label>Description</label>
+            <textarea id="pDesc" placeholder="What does this project do?"></textarea>
+          </div>
+          <div class="form-group full">
+            <label>Project Image (max 400KB)</label>
+            <div class="upload-area" id="projUploadArea">
+              <p>Click to select image</p>
+              <input type="file" id="pImage" accept="image/jpeg,image/png,image/webp" style="display:none;"/>
+              <img id="projPreview" class="upload-preview" alt="Project preview" style="border-radius:6px;width:120px;height:80px;object-fit:cover;"/>
+            </div>
+            <input type="hidden" id="pImageUrl"/>
+          </div>
+        </div>
+        <div style="margin-top:20px;display:flex;gap:12px;">
+          <button class="btn btn-primary" id="saveProjBtn">Save Project</button>
+          <button class="btn" style="border-color:var(--border);color:var(--muted);" id="clearProjBtn">Clear</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title">All Projects</div>
+        <div id="projTable">Loading...</div>
+      </div>
+    </div>
+
+    <!-- REVIEWS -->
+    <div class="tab-panel" id="panel-reviews">
+      <div class="card">
+        <div class="section-title">Add Review</div>
+        <div class="alert alert-success" id="revSuccess"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Developer *</label>
+            <select id="rDevId"></select>
+          </div>
+          <div class="form-group">
+            <label>Reviewer Name *</label>
+            <input type="text" id="rName" placeholder="e.g. Sanjay Kulkarni"/>
+          </div>
+          <div class="form-group">
+            <label>Reviewer Title</label>
+            <input type="text" id="rTitle" placeholder="e.g. Business Owner, Pune"/>
+          </div>
+          <div class="form-group">
+            <label>Rating (1-5) *</label>
+            <input type="number" id="rRating" min="1" max="5" value="5"/>
+          </div>
+          <div class="form-group full">
+            <label>Review Text *</label>
+            <textarea id="rText" placeholder="Write the review text here..."></textarea>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px;" id="saveRevBtn">Save Review</button>
+      </div>
+      <div class="card">
+        <div class="section-title">All Reviews</div>
+        <div id="revTable">Loading...</div>
+      </div>
+    </div>
+
+    <!-- SCORES -->
+    <div class="tab-panel" id="panel-scores">
+      <div class="card">
+        <div class="section-title">Add / Update Score</div>
+        <div class="alert alert-success" id="scoreSuccess"></div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Developer *</label>
+            <select id="scDevId"></select>
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="scCat">
+              <option>Technical Skills</option>
+              <option>Project Quality</option>
+              <option>Client Satisfaction</option>
+              <option>Communication</option>
+              <option>Innovation</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Score (0-100) *</label>
+            <input type="number" id="scScore" min="0" max="100" value="95"/>
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <input type="text" id="scNotes" placeholder="Optional notes..."/>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px;" id="saveScoreBtn">Save Score</button>
+      </div>
+      <div class="card">
+        <div class="section-title">All Scores</div>
+        <div id="scoreTable">Loading...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "https://cledgqtjgsqhdvniwahb.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNsZWRncXRqZ3NxaGR2bml3YWhiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNTMwNTgsImV4cCI6MjA4OTkyOTA1OH0.LxcBkdKtlkqjw-bVRjcDgJyxVYsP2Fr4uB0qe9cBdng";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// AUTH GUARD
+sb.auth.getSession().then(({data}) => {
+  if(!data.session) window.location.href = "/admin/index.html";
+  else document.getElementById("adminUser").textContent = data.session.user.email;
+});
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await sb.auth.signOut(); window.location.href = "/admin/index.html";
+});
+
+// TABS
+const tabTitles = {"dashboard":"Dashboard","developers":"Developers","add-developer":"Add Developer","projects":"Projects","reviews":"Reviews","scores":"Scores"};
+document.querySelectorAll("[data-tab]").forEach(el => {
+  el.addEventListener("click", e => {
+    e.preventDefault();
+    const t = el.dataset.tab;
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+    document.querySelectorAll("[data-tab]").forEach(a => a.classList.remove("active"));
+    document.getElementById("panel-"+t).classList.add("active");
+    el.classList.add("active");
+    document.getElementById("tabTitle").textContent = tabTitles[t]||t;
+    if(t==="developers") loadDevsTable();
+    if(t==="projects") { loadDevsDropdown("pDevId"); loadProjTable(); }
+    if(t==="reviews") { loadDevsDropdown("rDevId"); loadRevTable(); }
+    if(t==="scores") { loadDevsDropdown("scDevId"); loadScoreTable(); }
+    if(t==="add-developer") loadDevsDropdown("pDevId");
+  });
+});
+
+// UTILITY
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function showAlert(id, msg, type="success"){
+  const el=document.getElementById(id);
+  el.className=`alert alert-${type}`;
+  el.textContent=msg; el.style.display="block";
+  setTimeout(()=>el.style.display="none",3500);
+}
+function csvToArr(v){return v.split(",").map(s=>s.trim()).filter(Boolean);}
+
+// TOGGLE
+function initToggle(id){
+  const el=document.getElementById(id);
+  el._on=false;
+  el.addEventListener("click",()=>{el._on=!el._on;el.classList.toggle("on",el._on);});
+  el.setValue=(v)=>{el._on=!!v;el.classList.toggle("on",el._on);};
+  el.getValue=()=>el._on;
+}
+initToggle("tFeatured"); initToggle("tBest"); initToggle("tProjFeatured");
+document.getElementById("tBest").addEventListener("click",()=>{
+  setTimeout(()=>{
+    const on=document.getElementById("tBest").getValue();
+    document.getElementById("bestReasonWrap").style.display=on?"block":"none";
+  },50);
+});
+
+// STATS
+async function loadStats(){
+  const[{count:d},{count:p},{count:r},{count:b}]=await Promise.all([
+    sb.from("developers").select("*",{count:"exact",head:true}),
+    sb.from("projects").select("*",{count:"exact",head:true}),
+    sb.from("reviews").select("*",{count:"exact",head:true}),
+    sb.from("developers").select("*",{count:"exact",head:true}).eq("is_best",true)
+  ]);
+  document.getElementById("s1").textContent=d||0;
+  document.getElementById("s2").textContent=p||0;
+  document.getElementById("s3").textContent=r||0;
+  document.getElementById("s4").textContent=b||0;
+}
+loadStats();
+
+// DEVS TABLE
+async function loadDevsTable(){
+  const{data}=await sb.from("developers").select("*").order("score",{ascending:false});
+  if(!data||!data.length){document.getElementById("devsTable").innerHTML=`<p style="color:rgba(255,255,255,.4)">No developers yet.</p>`;return;}
+  document.getElementById("devsTable").innerHTML=`
+  <div class="table-wrap"><table>
+    <thead><tr><th>Image</th><th>Name</th><th>Title</th><th>Score</th><th>Rating</th><th>Best</th><th>Actions</th></tr></thead>
+    <tbody>${data.map(d=>`
+    <tr>
+      <td><img src="${d.profile_image_url||`https://ui-avatars.com/api/?name=${encodeURIComponent(d.name)}&background=222&color=fff&size=64`}" class="dev-img-sm" alt="${esc(d.name)}"/></td>
+      <td style="font-weight:600;">${esc(d.name)}</td>
+      <td style="color:rgba(255,255,255,.5);font-size:.82rem;">${esc(d.title)}</td>
+      <td style="font-weight:700;">${d.score}</td>
+      <td>${d.rating}</td>
+      <td><span class="badge ${d.is_best?"badge-best":"badge-normal"}">${d.is_best?"Best":""}</span></td>
+      <td style="display:flex;gap:8px;">
+        <button class="btn btn-sm" style="border-color:#555;color:#fff;" onclick="editDev('${d.id}')">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteDev('${d.id}','${esc(d.name)}')">Delete</button>
+      </td>
+    </tr>`).join("")}
+    </tbody>
+  </table></div>`;
+}
+
+// EDIT DEV
+async function editDev(id){
+  const{data:d}=await sb.from("developers").select("*").eq("id",id).single();
+  if(!d) return;
+  document.querySelector("[data-tab='add-developer']").click();
+  document.getElementById("devFormTitle").textContent="Edit Developer";
+  document.getElementById("editDevId").value=d.id;
+  document.getElementById("fName").value=d.name||"";
+  document.getElementById("fSlug").value=d.slug||"";
+  document.getElementById("fTitle").value=d.title||"";
+  document.getElementById("fLocation").value=d.location||"Solapur, Maharashtra, India";
+  document.getElementById("fExp").value=d.experience_years||0;
+  document.getElementById("fRating").value=d.rating||5;
+  document.getElementById("fScore").value=d.score||90;
+  document.getElementById("fFounded").value=d.founded_year||"";
+  document.getElementById("fGithub").value=d.github_url||"";
+  document.getElementById("fWebsite").value=d.website_url||"";
+  document.getElementById("fLinkedin").value=d.linkedin_url||"";
+  document.getElementById("fSkills").value=(d.skills||[]).join(", ");
+  document.getElementById("fTech").value=(d.technologies||[]).join(", ");
+  document.getElementById("fBio").value=d.bio||"";
+  document.getElementById("fBestReason").value=d.best_reason||"";
+  document.getElementById("fImageUrl").value=d.profile_image_url||"";
+  document.getElementById("tFeatured").setValue(d.is_featured);
+  document.getElementById("tBest").setValue(d.is_best);
+  if(d.is_best) document.getElementById("bestReasonWrap").style.display="block";
+  if(d.profile_image_url){const p=document.getElementById("uploadPreview");p.src=d.profile_image_url;p.style.display="block";}
+}
+
+// DELETE DEV
+async function deleteDev(id, name){
+  if(!confirm(`Delete developer "${name}"? This will also delete their projects and reviews.`)) return;
+  const{error}=await sb.from("developers").delete().eq("id",id);
+  if(error) alert("Error deleting: "+error.message);
+  else { showAlert("devListAlert","Developer deleted successfully."); loadDevsTable(); loadStats(); }
+}
+
+// IMAGE UPLOAD
+function initUpload(areaId, inputId, previewId, urlFieldId){
+  const area=document.getElementById(areaId);
+  const inp=document.getElementById(inputId);
+  area.addEventListener("click",()=>inp.click());
+  area.addEventListener("dragover",e=>{e.preventDefault();area.classList.add("drag");});
+  area.addEventListener("dragleave",()=>area.classList.remove("drag"));
+  area.addEventListener("drop",e=>{e.preventDefault();area.classList.remove("drag");if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0],previewId,urlFieldId);});
+  inp.addEventListener("change",()=>{if(inp.files[0])handleFile(inp.files[0],previewId,urlFieldId);});
+}
+async function handleFile(file, previewId, urlFieldId){
+  if(file.size > 409600){ alert("Image must be under 400KB. Please compress it first."); return; }
+  if(!["image/jpeg","image/png","image/webp"].includes(file.type)){ alert("Only JPG, PNG, WEBP allowed."); return; }
+  const preview=document.getElementById(previewId);
+  preview.src=URL.createObjectURL(file); preview.style.display="block";
+  const ext=file.name.split(".").pop();
+  const path=`profiles/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const{error}=await sb.storage.from("developer-images").upload(path,file,{cacheControl:"3600",upsert:false});
+  if(error){ alert("Upload failed: "+error.message); return; }
+  const{data:urlData}=sb.storage.from("developer-images").getPublicUrl(path);
+  document.getElementById(urlFieldId).value=urlData.publicUrl;
+}
+initUpload("uploadArea","fImage","uploadPreview","fImageUrl");
+initUpload("projUploadArea","pImage","projPreview","pImageUrl");
+
+// AUTO SLUG
+document.getElementById("fName").addEventListener("input", function(){
+  if(!document.getElementById("editDevId").value){
+    document.getElementById("fSlug").value = this.value.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+  }
+});
+
+// SAVE DEVELOPER
+document.getElementById("saveDevBtn").addEventListener("click", async () => {
+  const name=document.getElementById("fName").value.trim();
+  const slug=document.getElementById("fSlug").value.trim();
+  const title=document.getElementById("fTitle").value.trim();
+  if(!name||!slug||!title){ showAlert("devFormError","Name, Slug, and Title are required.","error"); return; }
+  const payload={
+    name, slug, title,
+    location: document.getElementById("fLocation").value.trim()||"Solapur, Maharashtra, India",
+    bio: document.getElementById("fBio").value.trim()||null,
+    skills: csvToArr(document.getElementById("fSkills").value),
+    technologies: csvToArr(document.getElementById("fTech").value),
+    experience_years: parseInt(document.getElementById("fExp").value)||0,
+    rating: parseFloat(document.getElementById("fRating").value)||5.0,
+    score: parseInt(document.getElementById("fScore").value)||90,
+    founded_year: parseInt(document.getElementById("fFounded").value)||null,
+    github_url: document.getElementById("fGithub").value.trim()||null,
+    website_url: document.getElementById("fWebsite").value.trim()||null,
+    linkedin_url: document.getElementById("fLinkedin").value.trim()||null,
+    profile_image_url: document.getElementById("fImageUrl").value||null,
+    is_featured: document.getElementById("tFeatured").getValue(),
+    is_best: document.getElementById("tBest").getValue(),
+    best_reason: document.getElementById("tBest").getValue() ? (document.getElementById("fBestReason").value.trim()||null) : null
+  };
+  const editId=document.getElementById("editDevId").value;
+  let error;
+  if(editId){
+    ({error}=await sb.from("developers").update(payload).eq("id",editId));
+  } else {
+    ({error}=await sb.from("developers").insert([payload]));
+  }
+  if(error){ showAlert("devFormError","Error: "+error.message,"error"); }
+  else {
+    showAlert("devFormSuccess", editId?"Developer updated!":"Developer added!");
+    document.getElementById("clearDevFormBtn").click();
+    loadStats();
+  }
+});
+
+document.getElementById("clearDevFormBtn").addEventListener("click",()=>{
+  document.getElementById("editDevId").value="";
+  document.getElementById("devFormTitle").textContent="Add Developer";
+  ["fName","fSlug","fTitle","fBio","fGithub","fWebsite","fLinkedin","fSkills","fTech","fBestReason","fImageUrl","fFounded"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("fLocation").value="Solapur, Maharashtra, India";
+  document.getElementById("fExp").value="1";
+  document.getElementById("fRating").value="5.0";
+  document.getElementById("fScore").value="90";
+  document.getElementById("tFeatured").setValue(false);
+  document.getElementById("tBest").setValue(false);
+  document.getElementById("bestReasonWrap").style.display="none";
+  const prev=document.getElementById("uploadPreview"); prev.src=""; prev.style.display="none";
+});
+
+// DROPDOWN HELPER
+async function loadDevsDropdown(selectId){
+  const{data}=await sb.from("developers").select("id,name").order("name");
+  const sel=document.getElementById(selectId);
+  if(!data) return;
+  sel.innerHTML=data.map(d=>`<option value="${d.id}">${d.name}</option>`).join("");
+}
+
+// PROJECTS
+document.getElementById("saveProjBtn").addEventListener("click", async () => {
+  const title=document.getElementById("pTitle").value.trim();
+  const devId=document.getElementById("pDevId").value;
+  if(!title||!devId){ alert("Developer and Title required."); return; }
+  const payload={
+    developer_id:devId, title,
+    description:document.getElementById("pDesc").value.trim()||null,
+    tech_stack:csvToArr(document.getElementById("pTech").value),
+    project_url:document.getElementById("pUrl").value.trim()||null,
+    github_url:document.getElementById("pGithub").value.trim()||null,
+    image_url:document.getElementById("pImageUrl").value||null,
+    is_featured:document.getElementById("tProjFeatured").getValue()
+  };
+  const editId=document.getElementById("editProjId").value;
+  const{error}= editId ? await sb.from("projects").update(payload).eq("id",editId) : await sb.from("projects").insert([payload]);
+  if(error) alert("Error: "+error.message);
+  else { showAlert("projSuccess","Project saved!"); loadProjTable(); loadStats(); }
+});
+document.getElementById("clearProjBtn").addEventListener("click",()=>{
+  document.getElementById("editProjId").value="";
+  ["pTitle","pDesc","pTech","pUrl","pGithub","pImageUrl"].forEach(id=>document.getElementById(id).value="");
+});
+
+async function loadProjTable(){
+  const{data}=await sb.from("projects").select("id,title,developer_id,developers(name)").order("created_at",{ascending:false});
+  if(!data||!data.length){document.getElementById("projTable").innerHTML=`<p style="color:rgba(255,255,255,.4)">No projects yet.</p>`;return;}
+  document.getElementById("projTable").innerHTML=`<div class="table-wrap"><table>
+    <thead><tr><th>Title</th><th>Developer</th><th>Actions</th></tr></thead>
+    <tbody>${data.map(p=>`<tr><td>${esc(p.title)}</td><td style="color:rgba(255,255,255,.5)">${esc(p.developers?.name||"")}</td>
+    <td><button class="btn btn-sm btn-danger" onclick="deleteRow('projects','${p.id}',loadProjTable)">Delete</button></td></tr>`).join("")}
+    </tbody></table></div>`;
+}
+
+// REVIEWS
+document.getElementById("saveRevBtn").addEventListener("click", async () => {
+  const name=document.getElementById("rName").value.trim();
+  const text=document.getElementById("rText").value.trim();
+  const rating=parseInt(document.getElementById("rRating").value);
+  const devId=document.getElementById("rDevId").value;
+  if(!name||!text||!devId){ alert("All fields required."); return; }
+  const{error}=await sb.from("reviews").insert([{developer_id:devId,reviewer_name:name,reviewer_title:document.getElementById("rTitle").value.trim()||null,rating,review_text:text}]);
+  if(error) alert("Error: "+error.message);
+  else { showAlert("revSuccess","Review added!"); loadRevTable(); loadStats(); ["rName","rTitle","rText"].forEach(id=>document.getElementById(id).value=""); document.getElementById("rRating").value=5; }
+});
+
+async function loadRevTable(){
+  const{data}=await sb.from("reviews").select("id,reviewer_name,rating,review_text,developer_id,developers(name)").order("created_at",{ascending:false});
+  if(!data||!data.length){document.getElementById("revTable").innerHTML=`<p style="color:rgba(255,255,255,.4)">No reviews yet.</p>`;return;}
+  document.getElementById("revTable").innerHTML=`<div class="table-wrap"><table>
+    <thead><tr><th>Reviewer</th><th>Developer</th><th>Rating</th><th>Review</th><th>Actions</th></tr></thead>
+    <tbody>${data.map(r=>`<tr><td style="font-weight:600">${esc(r.reviewer_name)}</td><td style="color:rgba(255,255,255,.5)">${esc(r.developers?.name||"")}</td><td>${r.rating}/5</td>
+    <td style="color:rgba(255,255,255,.5);font-size:.8rem;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(r.review_text)}</td>
+    <td><button class="btn btn-sm btn-danger" onclick="deleteRow('reviews','${r.id}',loadRevTable)">Delete</button></td></tr>`).join("")}
+    </tbody></table></div>`;
+}
+
+// SCORES
+document.getElementById("saveScoreBtn").addEventListener("click", async () => {
+  const devId=document.getElementById("scDevId").value;
+  const cat=document.getElementById("scCat").value;
+  const score=parseInt(document.getElementById("scScore").value);
+  if(!devId||!cat||isNaN(score)){ alert("All fields required."); return; }
+  const{error}=await sb.from("scores").insert([{developer_id:devId,category:cat,score,notes:document.getElementById("scNotes").value.trim()||null}]);
+  if(error) alert("Error: "+error.message);
+  else { showAlert("scoreSuccess","Score saved!"); loadScoreTable(); }
+});
+
+async function loadScoreTable(){
+  const{data}=await sb.from("scores").select("id,category,score,developer_id,developers(name)").order("created_at",{ascending:false});
+  if(!data||!data.length){document.getElementById("scoreTable").innerHTML=`<p style="color:rgba(255,255,255,.4)">No scores yet.</p>`;return;}
+  document.getElementById("scoreTable").innerHTML=`<div class="table-wrap"><table>
+    <thead><tr><th>Developer</th><th>Category</th><th>Score</th><th>Actions</th></tr></thead>
+    <tbody>${data.map(s=>`<tr><td style="font-weight:600">${esc(s.developers?.name||"")}</td><td>${esc(s.category)}</td><td style="font-weight:700">${s.score}/100</td>
+    <td><button class="btn btn-sm btn-danger" onclick="deleteRow('scores','${s.id}',loadScoreTable)">Delete</button></td></tr>`).join("")}
+    </tbody></table></div>`;
+}
+
+async function deleteRow(table, id, reloadFn){
+  if(!confirm("Delete this entry?")) return;
+  const{error}=await sb.from(table).delete().eq("id",id);
+  if(error) alert("Error: "+error.message);
+  else reloadFn();
+}
+
+// REALTIME
+sb.channel("admin-realtime")
+  .on("postgres_changes",{event:"*",schema:"public",table:"developers"},()=>{loadStats();})
+  .subscribe();
+</script>
+</body>
+</html>
