@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Score Rankings — Solapur Software Developers</title>
+  <meta name="description"
+    content="Objective score rankings of the best software developers in Solapur. See ratings, skill scores, project counts, and experience comparisons." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://solapursoftwaredevelopers.us.cc/score.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap"
+    rel="stylesheet" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- CountUp -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/countup.js/2.6.2/countUp.umd.js"></script>
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --black: #000;
+      --white: #fff;
+      --gray-50: #f9f9f9;
+      --gray-100: #f0f0f0;
+      --gray-200: #e0e0e0;
+      --gray-400: #999;
+      --gray-600: #555;
+      --gray-800: #222;
+      --line: #e8e8e8;
+      --radius: 12px;
+      --font: 'Inter', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--white);
+      color: var(--black);
+      line-height: 1.6;
+      overflow-x: hidden
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, .95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px
+    }
+
+    .nav-logo {
+      font-size: .85rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--black);
+      text-decoration: none
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--gray-600);
+      font-size: .9rem;
+      font-weight: 500;
+      transition: color .2s
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--black)
+    }
+
+    .nav-badge {
+      font-size: .7rem;
+      background: var(--black);
+      color: var(--white);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 600
+    }
+
+    /* PAGE HEADER */
+    .page-header {
+      padding: 120px 5% 60px;
+      border-bottom: 1px solid var(--line);
+      position: relative;
+      overflow: hidden
+    }
+
+    .page-header-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none
+    }
+
+    .page-header-content {
+      position: relative;
+      z-index: 1;
+      max-width: 700px
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: .72rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gray-400);
+      margin-bottom: .75rem
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 900;
+      letter-spacing: -.02em;
+      margin-bottom: 1rem
+    }
+
+    h2 {
+      font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+      font-weight: 800;
+      letter-spacing: -.02em;
+      margin-bottom: .75rem
+    }
+
+    .page-sub {
+      font-size: 1rem;
+      color: var(--gray-600);
+      max-width: 560px
+    }
+
+    section {
+      padding: 70px 5%
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--line);
+      margin: 0 5%
+    }
+
+    /* LEADERBOARD */
+    .leaderboard {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      max-width: 900px
+    }
+
+    .lb-row {
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.2rem 1.5rem;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      transition: all .3s;
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+
+    .lb-row:hover {
+      border-color: var(--black);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .07)
+    }
+
+    .lb-row.rank-1 {
+      border-color: var(--black);
+      background: var(--black);
+      color: var(--white)
+    }
+
+    .lb-row.rank-2 {
+      border-color: var(--gray-800)
+    }
+
+    .lb-rank {
+      font-size: 1.4rem;
+      font-weight: 900;
+      font-family: var(--mono);
+      color: var(--gray-400);
+      text-align: center
+    }
+
+    .lb-row.rank-1 .lb-rank {
+      color: rgba(255, 255, 255, .5)
+    }
+
+    .lb-info {
+      min-width: 0
+    }
+
+    .lb-name {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 2px
+    }
+
+    .lb-row.rank-1 .lb-name {
+      color: var(--white)
+    }
+
+    .lb-title {
+      font-size: .78rem;
+      color: var(--gray-600)
+    }
+
+    .lb-row.rank-1 .lb-title {
+      color: rgba(255, 255, 255, .6)
+    }
+
+    .lb-scores {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .lb-score-item {
+      text-align: center
+    }
+
+    .lb-score-val {
+      font-size: 1.1rem;
+      font-weight: 800;
+      display: block;
+      font-family: var(--mono)
+    }
+
+    .lb-row.rank-1 .lb-score-val {
+      color: var(--white)
+    }
+
+    .lb-score-lbl {
+      font-size: .65rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--gray-400)
+    }
+
+    .lb-row.rank-1 .lb-score-lbl {
+      color: rgba(255, 255, 255, .4)
+    }
+
+    /* SCORE BAR SECTION */
+    .score-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px
+    }
+
+    .score-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.8rem;
+      background: var(--white)
+    }
+
+    .score-card-name {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: .3rem
+    }
+
+    .score-card-title {
+      font-size: .78rem;
+      color: var(--gray-600);
+      margin-bottom: 1.5rem
+    }
+
+    .score-bar-group {
+      margin-bottom: 1.1rem
+    }
+
+    .score-bar-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: .4rem
+    }
+
+    .score-bar-name {
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--gray-800)
+    }
+
+    .score-bar-val {
+      font-size: .78rem;
+      font-weight: 700;
+      font-family: var(--mono)
+    }
+
+    .score-bar-track {
+      height: 6px;
+      background: var(--gray-100);
+      border-radius: 10px;
+      overflow: hidden
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 10px;
+      background: var(--black);
+      width: 0;
+      transition: width 1.2s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    .score-overall {
+      margin-top: 1.5rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .score-overall-label {
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--gray-600)
+    }
+
+    .score-overall-val {
+      font-size: 1.6rem;
+      font-weight: 900;
+      font-family: var(--mono)
+    }
+
+    /* RADAR / CHARTS */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      max-width: 1100px
+    }
+
+    .chart-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 1.8rem
+    }
+
+    .chart-title {
+      font-size: .88rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      color: var(--gray-800)
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 260px
+    }
+
+    /* COMPARISON TABLE */
+    .compare-table {
+      width: 100%;
+      max-width: 900px;
+      border-collapse: collapse;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden
+    }
+
+    .compare-table th,
+    .compare-table td {
+      padding: 1rem 1.2rem;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      font-size: .85rem
+    }
+
+    .compare-table th {
+      background: var(--black);
+      color: var(--white);
+      font-weight: 600;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .08em
+    }
+
+    .compare-table tr:last-child td {
+      border-bottom: none
+    }
+
+    .compare-table tr:hover td {
+      background: var(--gray-50)
+    }
+
+    .compare-table .winner {
+      font-weight: 700
+    }
+
+    .badge-win {
+      background: var(--black);
+      color: var(--white);
+      font-size: .65rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 700;
+      margin-left: 6px
+    }
+
+    /* ANIMATED COUNTER BADGES */
+    .podium {
+      display: flex;
+      align-items: flex-end;
+      gap: 1rem;
+      justify-content: center;
+      margin: 3rem 0;
+      flex-wrap: wrap
+    }
+
+    .podium-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .75rem
+    }
+
+    .podium-block {
+      width: 120px;
+      border-radius: 8px 8px 0 0;
+      background: var(--gray-100);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: .75rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .podium-block::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--black);
+      height: 0;
+      transition: height 1.4s cubic-bezier(.4, 0, .2, 1)
+    }
+
+    .podium-block.animate::after {
+      height: 100%
+    }
+
+    .podium-num {
+      font-size: 1.8rem;
+      font-weight: 900;
+      font-family: var(--mono);
+      color: var(--white);
+      position: relative;
+      z-index: 1
+    }
+
+    .podium-name {
+      font-size: .82rem;
+      font-weight: 700;
+      text-align: center
+    }
+
+    .podium-score {
+      font-size: .75rem;
+      color: var(--gray-400);
+      font-family: var(--mono)
+    }
+
+    .podium-rank {
+      font-size: .7rem;
+      font-weight: 700;
+      background: var(--black);
+      color: var(--white);
+      padding: 2px 10px;
+      border-radius: 10px
+    }
+
+    .podium-item.p1 .podium-block {
+      height: 160px
+    }
+
+    .podium-item.p2 .podium-block {
+      height: 120px
+    }
+
+    .podium-item.p3 .podium-block {
+      height: 90px
+    }
+
+    .podium-item.p4 .podium-block {
+      height: 70px
+    }
+
+    .podium-item.p5 .podium-block {
+      height: 55px
+    }
+
+    /* SVG ANIMATED LINES */
+    .svg-lines {
+      display: block;
+      width: 100%;
+      height: 60px;
+      margin: 2rem 0
+    }
+
+    footer {
+      padding: 3rem 5%;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem
+    }
+
+    .footer-note {
+      font-size: .8rem;
+      color: var(--gray-400)
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem
+    }
+
+    .footer-links a {
+      font-size: .8rem;
+      color: var(--gray-400);
+      text-decoration: none
+    }
+
+    .footer-links a:hover {
+      color: var(--black)
+    }
+
+    @media(max-width:768px) {
+      .nav-links {
+        display: none
+      }
+
+      .lb-scores {
+        gap: .6rem
+      }
+
+      .podium {
+        gap: .5rem
+      }
+
+      .podium-block {
+        width: 80px
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">Solapur Devs</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="developers.html">Developers</a></li>
+      <li><a href="score.html" class="active">Scores</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <span class="nav-badge">Solapur, MH</span>
+  </nav>
+
+  <!-- HEADER -->
+  <header class="page-header">
+    <svg class="page-header-bg" viewBox="0 0 1440 400" fill="none" aria-hidden="true">
+      <circle cx="100" cy="100" r="200" stroke="#f0f0f0" stroke-width="1" fill="none" />
+      <circle cx="1350" cy="300" r="250" stroke="#f0f0f0" stroke-width="1" fill="none" />
+      <line x1="0" y1="200" x2="1440" y2="200" stroke="#f5f5f5" stroke-width="1" />
+    </svg>
+    <div class="page-header-content">
+      <div class="section-label">Objective Rankings · Solapur, Maharashtra</div>
+      <h1>Developer Score Rankings</h1>
+      <p class="page-sub">Comprehensive scoring across ratings, skills, projects, experience, and community impact. All
+        data verified. No sponsored rankings.</p>
+    </div>
+  </header>
+
+  <!-- PODIUM -->
+  <section aria-labelledby="podium-heading">
+    <div class="section-label">Visual Ranking</div>
+    <h2 id="podium-heading">Top 5 Developers — Solapur</h2>
+    <p style="color:var(--gray-600);margin-bottom:2.5rem;font-size:.9rem">Ranked by composite score: rating × 40% +
+      skills × 30% + projects × 20% + experience × 10%</p>
+
+    <div class="podium" role="list" aria-label="Developer podium rankings">
+      <div class="podium-item p2" role="listitem">
+        <span class="podium-rank">#2</span>
+        <div class="podium-block" id="pod2">
+          <span class="podium-num" id="pod2-num">0</span>
+        </div>
+        <span class="podium-name">Amir Rangrez</span>
+        <span class="podium-score">4.8 / 5.0</span>
+      </div>
+      <div class="podium-item p1" role="listitem">
+        <span class="podium-rank">#1</span>
+        <div class="podium-block" id="pod1">
+          <span class="podium-num" id="pod1-num">0</span>
+        </div>
+        <span class="podium-name">Yahya Mundewadi</span>
+        <span class="podium-score">4.9 / 5.0</span>
+      </div>
+      <div class="podium-item p3" role="listitem">
+        <span class="podium-rank">#3</span>
+        <div class="podium-block" id="pod3">
+          <span class="podium-num" id="pod3-num">0</span>
+        </div>
+        <span class="podium-name">Rohan Patil</span>
+        <span class="podium-score">4.5 / 5.0</span>
+      </div>
+      <div class="podium-item p4" role="listitem">
+        <span class="podium-rank">#4</span>
+        <div class="podium-block" id="pod4">
+          <span class="podium-num" id="pod4-num">0</span>
+        </div>
+        <span class="podium-name">Priya Desai</span>
+        <span class="podium-score">4.4 / 5.0</span>
+      </div>
+      <div class="podium-item p5" role="listitem">
+        <span class="podium-rank">#5</span>
+        <div class="podium-block" id="pod5">
+          <span class="podium-num" id="pod5-num">0</span>
+        </div>
+        <span class="podium-name">Amit Kulkarni</span>
+        <span class="podium-score">4.2 / 5.0</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- LEADERBOARD -->
+  <section aria-labelledby="lb-heading">
+    <div class="section-label">Full Leaderboard</div>
+    <h2 id="lb-heading">Rankings with Breakdown</h2>
+    <div class="leaderboard" id="leaderboard">
+
+      <div class="lb-row rank-1" data-rank="1">
+        <div class="lb-rank">01</div>
+        <div class="lb-info">
+          <div class="lb-name">Yahya Mundewadi</div>
+          <div class="lb-title">Full Stack Developer · Co-Founder &amp; CEO, Dominal Tech · Solapur</div>
+        </div>
+        <div class="lb-scores">
+          <div class="lb-score-item"><span class="lb-score-val">4.9</span><span class="lb-score-lbl">Rating</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">95</span><span class="lb-score-lbl">Skills</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">12</span><span class="lb-score-lbl">Projects</span>
+          </div>
+          <div class="lb-score-item"><span class="lb-score-val">3yr</span><span class="lb-score-lbl">Exp</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">93</span><span class="lb-score-lbl">Total</span></div>
+        </div>
+      </div>
+
+      <div class="lb-row rank-2" data-rank="2">
+        <div class="lb-rank">02</div>
+        <div class="lb-info">
+          <div class="lb-name">Amir Rangrez</div>
+          <div class="lb-title">Full Stack Developer · Co-Founder &amp; CTO, Dominal Tech · Solapur</div>
+        </div>
+        <div class="lb-scores">
+          <div class="lb-score-item"><span class="lb-score-val">4.8</span><span class="lb-score-lbl">Rating</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">88</span><span class="lb-score-lbl">Skills</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">8</span><span class="lb-score-lbl">Projects</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">2yr</span><span class="lb-score-lbl">Exp</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">87</span><span class="lb-score-lbl">Total</span></div>
+        </div>
+      </div>
+
+      <div class="lb-row" data-rank="3">
+        <div class="lb-rank">03</div>
+        <div class="lb-info">
+          <div class="lb-name">Rohan Patil</div>
+          <div class="lb-title">MERN Stack Developer · Freelance · Solapur</div>
+        </div>
+        <div class="lb-scores">
+          <div class="lb-score-item"><span class="lb-score-val">4.5</span><span class="lb-score-lbl">Rating</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">74</span><span class="lb-score-lbl">Skills</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">6</span><span class="lb-score-lbl">Projects</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">4yr</span><span class="lb-score-lbl">Exp</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">74</span><span class="lb-score-lbl">Total</span></div>
+        </div>
+      </div>
+
+      <div class="lb-row" data-rank="4">
+        <div class="lb-rank">04</div>
+        <div class="lb-info">
+          <div class="lb-name">Priya Desai</div>
+          <div class="lb-title">Android Developer · Mobile Specialist · Solapur</div>
+        </div>
+        <div class="lb-scores">
+          <div class="lb-score-item"><span class="lb-score-val">4.4</span><span class="lb-score-lbl">Rating</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">70</span><span class="lb-score-lbl">Skills</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">5</span><span class="lb-score-lbl">Projects</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">3yr</span><span class="lb-score-lbl">Exp</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">70</span><span class="lb-score-lbl">Total</span></div>
+        </div>
+      </div>
+
+      <div class="lb-row" data-rank="5">
+        <div class="lb-rank">05</div>
+        <div class="lb-info">
+          <div class="lb-name">Amit Kulkarni</div>
+          <div class="lb-title">Python Backend Developer · Freelance · Solapur</div>
+        </div>
+        <div class="lb-scores">
+          <div class="lb-score-item"><span class="lb-score-val">4.2</span><span class="lb-score-lbl">Rating</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">65</span><span class="lb-score-lbl">Skills</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">4</span><span class="lb-score-lbl">Projects</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">5yr</span><span class="lb-score-lbl">Exp</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">65</span><span class="lb-score-lbl">Total</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SKILL SCORE BARS -->
+  <section aria-labelledby="bars-heading">
+    <div class="section-label">Skill Score Breakdown</div>
+    <h2 id="bars-heading">Detailed Score Cards</h2>
+    <p style="color:var(--gray-600);margin-bottom:2.5rem;font-size:.9rem">Scores out of 100 across key developer
+      competencies.</p>
+
+    <div class="score-cards">
+
+      <!-- Yahya -->
+      <div class="score-card" id="sc-yahya">
+        <div class="score-card-name">Yahya Mundewadi</div>
+        <div class="score-card-title">Full Stack Developer · Solapur · #1 Ranked</div>
+        <div class="score-bar-group">
+          <div class="score-bar-label"><span class="score-bar-name">Full Stack Development</span><span
+              class="score-bar-val">98/100</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-width="98"></div>
+          </div>
+        </div>
+        <div class="score-bar-group">
+          <div class="score-bar-label"><span class="score-bar-name">Android Development</span><span
+              class="score-bar-val">95/100</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-width="95"></div>
+          </div>
+        </div>
+        <div class="score-bar-group">
+          <div class="score-bar-label"><span class="score-bar-name">Python &amp; AI</span><span
+              class="score-bar-val">94/100</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-width="94"></div>
+          </div>
+        </div>
+        <div class="score-bar-group">
+          <div class="score-bar-label"><span class="score-bar-name">Database Management</span><span
+              class="score-bar-val">91/100</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-width="91"></div>
+          </div>
+        </div>
+        <div class="score-bar-group">
+          <div class="score-bar-label"><span class="score-bar-name">Open Source Contribution</span><span
+              class="score-bar-val">90/100</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-width="90"></div>
+          </div>
+        </div>
+        <div class="score-bar-group">
+          <div class="score-bar-label"><span class="score-bar-name">Leadership &amp; Founding</span><span
+              class="score-bar-val">96/100</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-width="96"></div>
+          </div>
+        </div>
+        <div class="score-overall">
+          <span class="score-overall-label">Overall Score</span>
+          <span class="score-overall-val" id="yahya-overall">0</span>
+        </div>
+      </div>
+
+      <!-- Amir -->
+      <div class="score-card" id="sc-amir">
+        <div class="score-card-name">Amir Rangrez</div>
+        <div class="score-card-title">Full Stack Developer · Solapur · #2 Ranked</div>
+        <div class="score-bar-group">
+          <div class="score-bar-label"><span class="score-bar-name">React Development</span><span
+              class="score-bar-val">95/100</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-width="95"></div>
+          </div>
+        </div>
+        <div class="score-bar-group">
+          <div class="score-bar-label"><span class="score-bar-name">JavaScript / TypeScript</span><span
+              class="score-bar-val">92/100</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-width="92"></div>
+          </div>
+        </div>
+        <div class="score-bar-group">
+          <div class="score-bar-label"><span class="score-bar-name">Supabase &amp; Backend</span><span
+              class="score-bar-val">88/100</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-width="88"></div>
+          </div>
+        </div>
+        <div class="score-bar-group">
+          <div class="score-bar-label"><span class="score-bar-name">UI / UX Design</span><span
+              class="score-bar-val">86/100</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-width="86"></div>
+          </div>
+        </div>
+        <div class="score-bar-group">
+          <div class="score-bar-label"><span class="score-bar-name">Community &amp; Network</span><span
+              class="score-bar-val">90/100</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-width="90"></div>
+          </div>
+        </div>
+        <div class="score-bar-group">
+          <div class="score-bar-label"><span class="score-bar-name">Leadership &amp; Founding</span><span
+              class="score-bar-val">88/100</span></div>
+          <div class="score-bar-track">
+            <div class="score-bar-fill" data-width="88"></div>
+          </div>
+        </div>
+        <div class="score-overall">
+          <span class="score-overall-label">Overall Score</span>
+          <span class="score-overall-val" id="amir-overall">0</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- CHARTS -->
+  <section aria-labelledby="charts-heading">
+    <div class="section-label">Visual Analytics</div>
+    <h2 id="charts-heading">Performance Charts</h2>
+    <div class="charts-grid">
+
+      <div class="chart-card">
+        <div class="chart-title">Rating Comparison — All Developers</div>
+        <div class="chart-wrap"><canvas id="chartBar"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Yahya Mundewadi — Skill Radar</div>
+        <div class="chart-wrap"><canvas id="chartRadarYahya"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Amir Rangrez — Skill Radar</div>
+        <div class="chart-wrap"><canvas id="chartRadarAmir"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Projects Delivered</div>
+        <div class="chart-wrap"><canvas id="chartProjects"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Composite Score Comparison</div>
+        <div class="chart-wrap"><canvas id="chartComposite"></canvas></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Experience vs Rating</div>
+        <div class="chart-wrap"><canvas id="chartScatter"></canvas></div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- COMPARISON TABLE -->
+  <section aria-labelledby="compare-heading">
+    <div class="section-label">Head-to-Head</div>
+    <h2 id="compare-heading">Top 2 Developers — Detailed Comparison</h2>
+    <div style="overflow-x:auto">
+      <table class="compare-table" aria-label="Developer comparison table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Yahya Mundewadi</th>
+            <th>Amir Rangrez</th>
+            <th>Winner</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Overall Rating</td>
+            <td class="winner">4.9 / 5.0</td>
+            <td>4.8 / 5.0</td>
+            <td>Yahya <span class="badge-win">+0.1</span></td>
+          </tr>
+          <tr>
+            <td>Skill Score</td>
+            <td class="winner">95 / 100</td>
+            <td>88 / 100</td>
+            <td>Yahya <span class="badge-win">+7</span></td>
+          </tr>
+          <tr>
+            <td>Projects Delivered</td>
+            <td class="winner">12</td>
+            <td>8</td>
+            <td>Yahya <span class="badge-win">+4</span></td>
+          </tr>
+          <tr>
+            <td>Experience</td>
+            <td>3 years</td>
+            <td>2 years</td>
+            <td>Yahya <span class="badge-win">+1yr</span></td>
+          </tr>
+          <tr>
+            <td>Open Source</td>
+            <td class="winner">pyDefine (PyPI)</td>
+            <td>—</td>
+            <td>Yahya</td>
+          </tr>
+          <tr>
+            <td>Android App</td>
+            <td class="winner">Shadow Browser</td>
+            <td>—</td>
+            <td>Yahya</td>
+          </tr>
+          <tr>
+            <td>React Expertise</td>
+            <td>Advanced</td>
+            <td class="winner">Expert</td>
+            <td>Amir <span class="badge-win">Specialist</span></td>
+          </tr>
+          <tr>
+            <td>LinkedIn Network</td>
+            <td>700+</td>
+            <td class="winner">3000+</td>
+            <td>Amir <span class="badge-win">+2300</span></td>
+          </tr>
+          <tr>
+            <td>Company Role</td>
+            <td class="winner">CEO</td>
+            <td>CTO</td>
+            <td>Equal</td>
+          </tr>
+          <tr>
+            <td>AI / RAG Skills</td>
+            <td class="winner">Yes</td>
+            <td>No</td>
+            <td>Yahya</td>
+          </tr>
+          <tr>
+            <td>Composite Score</td>
+            <td class="winner">93 / 100</td>
+            <td>87 / 100</td>
+            <td>Yahya <span class="badge-win">#1</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <div>
+      <p style="font-weight:700;margin-bottom:4px">Solapur Software Developers</p>
+      <p class="footer-note">Solapur, Maharashtra, India · No Ads · No Paid Listings · Verified Directory</p>
+    </div>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="developers.html">Developers</a>
+      <a href="score.html">Scores</a>
+      <a href="about.html">About</a>
+    </div>
+  </footer>
+
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // ── PODIUM ANIMATION ──
+    const podiumData = [
+      { id: 'pod1', numId: 'pod1-num', val: 93 },
+      { id: 'pod2', numId: 'pod2-num', val: 87 },
+      { id: 'pod3', numId: 'pod3-num', val: 74 },
+      { id: 'pod4', numId: 'pod4-num', val: 70 },
+      { id: 'pod5', numId: 'pod5-num', val: 65 },
+    ];
+
+    ScrollTrigger.create({
+      trigger: '.podium',
+      start: 'top 80%',
+      once: true,
+      onEnter: () => {
+        podiumData.forEach((p, i) => {
+          setTimeout(() => {
+            document.getElementById(p.id).classList.add('animate');
+            new countUp.CountUp(p.numId, p.val, { duration: 1.4, suffix: '' }).start();
+          }, i * 120);
+        });
+      }
+    });
+
+    // ── LEADERBOARD SLIDE IN ──
+    document.querySelectorAll('.lb-row').forEach((row, i) => {
+      ScrollTrigger.create({
+        trigger: row, start: 'top 88%', once: true,
+        onEnter: () => {
+          gsap.to(row, { opacity: 1, x: 0, duration: 0.5, delay: i * 0.1, ease: 'power2.out' });
+        }
+      });
+    });
+
+    // ── SCORE BARS ──
+    function animateBars(container) {
+      container.querySelectorAll('.score-bar-fill').forEach((bar, i) => {
+        setTimeout(() => {
+          bar.style.width = bar.dataset.width + '%';
+        }, i * 100);
+      });
+    }
+
+    ScrollTrigger.create({
+      trigger: '#sc-yahya', start: 'top 82%', once: true,
+      onEnter: () => {
+        animateBars(document.getElementById('sc-yahya'));
+        new countUp.CountUp('yahya-overall', 93, { duration: 1.5, suffix: '/100' }).start();
+      }
+    });
+
+    ScrollTrigger.create({
+      trigger: '#sc-amir', start: 'top 82%', once: true,
+      onEnter: () => {
+        animateBars(document.getElementById('sc-amir'));
+        new countUp.CountUp('amir-overall', 87, { duration: 1.5, suffix: '/100' }).start();
+      }
+    });
+
+    // ── CHARTS ──
+    const names5 = ['Yahya', 'Amir', 'Rohan', 'Priya', 'Amit'];
+    const baseOpts = {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: '#000', titleColor: '#fff', bodyColor: '#fff', padding: 10, cornerRadius: 6 }
+      }
+    };
+    const grays = ['#000', '#333', '#666', '#888', '#aaa'];
+
+    // Bar — ratings
+    new Chart(document.getElementById('chartBar'), {
+      type: 'bar',
+      data: {
+        labels: names5,
+        datasets: [{ data: [4.9, 4.8, 4.5, 4.4, 4.2], backgroundColor: grays, borderRadius: 8, borderSkipped: false }]
+      },
+      options: { ...baseOpts, scales: { y: { min: 3.5, max: 5, ticks: { stepSize: .5 }, grid: { color: '#f0f0f0' } }, x: { grid: { display: false } } } }
+    });
+
+    // Radar — Yahya
+    new Chart(document.getElementById('chartRadarYahya'), {
+      type: 'radar',
+      data: {
+        labels: ['Full Stack', 'Android', 'Python/AI', 'Database', 'Open Source', 'Leadership'],
+        datasets: [{
+          data: [98, 95, 94, 91, 90, 96],
+          backgroundColor: 'rgba(0,0,0,0.08)',
+          borderColor: '#000', borderWidth: 2,
+          pointBackgroundColor: '#000', pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#000', bodyColor: '#fff', padding: 8 } },
+        scales: { r: { min: 70, max: 100, ticks: { stepSize: 10, font: { size: 9 } }, grid: { color: '#eee' }, pointLabels: { font: { size: 10 } } } }
+      }
+    });
+
+    // Radar — Amir
+    new Chart(document.getElementById('chartRadarAmir'), {
+      type: 'radar',
+      data: {
+        labels: ['React', 'JavaScript', 'Supabase', 'UI/UX', 'Community', 'Leadership'],
+        datasets: [{
+          data: [95, 92, 88, 86, 90, 88],
+          backgroundColor: 'rgba(0,0,0,0.08)',
+          borderColor: '#333', borderWidth: 2,
+          pointBackgroundColor: '#333', pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#000', bodyColor: '#fff', padding: 8 } },
+        scales: { r: { min: 70, max: 100, ticks: { stepSize: 10, font: { size: 9 } }, grid: { color: '#eee' }, pointLabels: { font: { size: 10 } } } }
+      }
+    });
+
+    // Projects
+    new Chart(document.getElementById('chartProjects'), {
+      type: 'bar',
+      data: {
+        labels: names5,
+        datasets: [{ data: [12, 8, 6, 5, 4], backgroundColor: grays, borderRadius: 8, borderSkipped: false }]
+      },
+      options: { ...baseOpts, scales: { y: { min: 0, ticks: { stepSize: 2 }, grid: { color: '#f0f0f0' } }, x: { grid: { display: false } } } }
+    });
+
+    // Composite
+    new Chart(document.getElementById('chartComposite'), {
+      type: 'bar',
+      data: {
+        labels: names5,
+        datasets: [{ data: [93, 87, 74, 70, 65], backgroundColor: grays, borderRadius: 8, borderSkipped: false }]
+      },
+      options: { ...baseOpts, scales: { y: { min: 50, max: 100, ticks: { stepSize: 10 }, grid: { color: '#f0f0f0' } }, x: { grid: { display: false } } } }
+    });
+
+    // Scatter — exp vs rating
+    new Chart(document.getElementById('chartScatter'), {
+      type: 'scatter',
+      data: {
+        datasets: [{
+          data: [
+            { x: 3, y: 4.9, label: 'Yahya' },
+            { x: 2, y: 4.8, label: 'Amir' },
+            { x: 4, y: 4.5, label: 'Rohan' },
+            { x: 3, y: 4.4, label: 'Priya' },
+            { x: 5, y: 4.2, label: 'Amit' },
+          ],
+          backgroundColor: grays,
+          pointRadius: 9, pointHoverRadius: 12
+        }]
+      },
+      options: {
+        ...baseOpts,
+        plugins: {
+          ...baseOpts.plugins,
+          tooltip: {
+            ...baseOpts.plugins.tooltip,
+            callbacks: {
+              label: ctx => `${ctx.raw.label}: ${ctx.raw.y}/5 · ${ctx.raw.x}yrs`
+            }
+          }
+        },
+        scales: {
+          x: { title: { display: true, text: 'Experience (years)', font: { size: 10 } }, min: 0, max: 7, grid: { color: '#f0f0f0' } },
+          y: { title: { display: true, text: 'Rating', font: { size: 10 } }, min: 3.8, max: 5.1, ticks: { stepSize: .2 }, grid: { color: '#f0f0f0' } }
+        }
+      }
+    });
+
+    // GSAP fade cards
+    gsap.utils.toArray('.chart-card, .score-card, .compare-table').forEach(el => {
+      gsap.from(el, {
+        scrollTrigger: { trigger: el, start: 'top 88%' },
+        opacity: 0, y: 20, duration: 0.6, ease: 'power2.out'
+      });
+    });
+  </script>
+
+</body>
+
+</html>
