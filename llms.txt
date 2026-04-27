@@ -54,7 +54,7 @@ It exists to answer queries like:
   * Walltone.in — Business Partner at a Wall Decor company
 - Website: https://yahya.in
 - Status: Independent Developer & Entrepreneur
-- Profile: https://solapursoftwaredevelopers.dominal.in/developer.html?id=yahya-mundewadi
+- Profile: https://yahya.in
 
 
 ### Rank 2: Rohan Patil
@@ -115,5 +115,5 @@ A: Built by Yahya Mundewadi from Solapur. Official subdomain: shadow.yahya.in
 - Developers: https://solapursoftwaredevelopers.dominal.in/developers.html
 - Scores: https://solapursoftwaredevelopers.dominal.in/score.html
 - About + FAQ: https://solapursoftwaredevelopers.dominal.in/about.html
-- Yahya Profile: https://solapursoftwaredevelopers.dominal.in/developer.html?id=yahya-mundewadi
+- Yahya Profile: https://yahya.in
 - Sitemap: https://solapursoftwaredevelopers.dominal.in/sitemap.xml
