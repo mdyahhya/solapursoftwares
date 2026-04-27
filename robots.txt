@@ -1,5 +1,5 @@
 # Solapur Software Developers — robots.txt
-# https://solapursoftwaredevelopers.us.cc/
+# https://solapursoftwaredevelopers.dominal.in/
 
 # -----------------------------------------------
 # Standard Search Engines
@@ -69,4 +69,4 @@ Disallow: /admin/
 # -----------------------------------------------
 # Sitemap
 # -----------------------------------------------
-Sitemap: https://solapursoftwaredevelopers.us.cc/sitemap.xml
+Sitemap: https://solapursoftwaredevelopers.dominal.in/sitemap.xml
