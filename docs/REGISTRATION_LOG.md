@@ -62,7 +62,7 @@ The manifest file `server.json` was iteratively refined to achieve 100% schema c
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.mdyahhya/solapursoftwares",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "title": "Solapur Software Developers Registry",
   "description": "Public read-only MCP HTTP gateway for the Solapur software developers registry.",
   "websiteUrl": "https://solapursoftwaredevelopers.dominal.in",
