@@ -56,8 +56,9 @@ This document unifies both Part 1 and Part 2 of the strategic blueprint to build
 ### Phase 10, 11 & 12: Registry Readiness & Post-Submission SOPs
 *   **Objective**: Format official listing descriptors and establish long-term maintenance instructions.
 *   **Requirements**:
-    *   Generate `docs/mcp-registry-package.json` for official ecosystems.
-    *   Prepare operational checklists and roadmap schedules.
+    *   Generate `server.json` (the standard MCP server schema definition) and `docs/mcp-registry-package.json`.
+    *   Set up ownership verification requirements (GitHub OAuth namespace verification or DNS TXT records for custom domains).
+    *   Prepare post-submission validation checklists and database synchronization procedures.
 
 ---
 
@@ -84,35 +85,42 @@ This document unifies both Part 1 and Part 2 of the strategic blueprint to build
 *   **Requirements**:
     *   Ensure README, LICENSE, and SECURITY.md are fully complete.
     *   Confirm all Cursor, Windsurf, and Claude Desktop config integration scripts are completely valid.
+    *   Establish YAML form issue templates for submissions, updates, and bug reports.
 
-### Phase 16 & 17: Official MCP Registry Submission
-*   **Objective**: Deliver the MCP gateway metadata and submit the registry listing request.
+### Phase 16 & 17: Official MCP Registry Publication
+*   **Objective**: Deliver the MCP gateway metadata and publish it via the official MCP Registry workflow.
 *   **Requirements**:
-    *   Finalize server naming, descriptions, and transport properties.
-    *   Follow the standard community fork-and-pull-request workflow to publish the server inside the official registry.
+    *   Configure the standardized `server.json` manifest at the repository root.
+    *   Install the official `mcp-publisher` CLI tool.
+    *   Authenticate via GitHub OAuth (`mcp-publisher login github`).
+    *   Execute namespace verification (DNS verification via `_mcp-challenge` TXT records or HTTP verification via `.well-known/mcp-challenge.txt` for custom domains).
+    *   Validate the manifest via `mcp-publisher publish --dry-run` and publish to the official registry.
 
 ### Phase 18: Smithery & Community Registry Distribution
-*   **Objective**: Increase programmatic discoverability inside community distribution engines.
+*   **Objective**: Maximize ecosystem visibility through community hubs.
 *   **Requirements**:
-    *   Integrate with Smithery using standard HTTP server setup properties.
-    *   Formulate CLI verification commands (e.g. `npx`, `@modelcontextprotocol/server-http`).
+    *   Integrate a complete `smithery.yaml` configuration in the root workspace.
+    *   Publish to Smithery by logging in via GitHub and importing the repository at `smithery.ai/new`.
+    *   Avoid assumptions of instant indexing; account for automated validation runs and manual indexing review queues.
 
 ### Phase 19: Discovery Checks After Publishing
 *   **Objective**: Conduct an end-to-end, multi-channel check of the project's visibility.
 *   **Verification Areas**:
-    *   Check for correct descriptions in registries.
-    *   Test direct links from registries back to source documents and documentation pages.
+    *   Check for correct server description and active status in the MCP Registry API.
+    *   Ensure the public GitHub repository is fully discoverable and has all docs aligned with the registry listings.
+    *   Query Smithery via CLI or web search to verify listing completeness.
 
 ### Phase 20: "LLMs Can Read Our Site" Final Check
 *   **Objective**: Verify the practical AI readability of the entire web property.
 *   **Key Metrics**:
+    *   Uptime validation on the public HTTP JSON-RPC MCP gateway.
     *   Valid robots.txt allowances.
-    *   Accessible machine-readable formats (JSON, JSON-LD, FAQ pages).
-    *   Full MCP access to public directory records.
+    *   Accessible machine-readable semantic frameworks (`llms.txt`, `presence.json`, `sitemap.xml`, JSON-LD schemas).
+    *   Verify whether the project can honestly be described as AI-readable and MCP-accessible.
 
 ### Phase 21: Operations & Long-Term Maintenance
 *   **Objective**: Define standard operating workflows for long-term project viability.
 *   **Requirements**:
-    *   Standard database update cycles.
-    *   Telemetry checks for serverless function health.
-    *   Technical roadmap plans for future versions.
+    *   Standard database update cycles and telemetry checks.
+    *   Maintain README, llms.txt, presence.json, and registry configurations in perfect synchronization when developers or rankings change.
+

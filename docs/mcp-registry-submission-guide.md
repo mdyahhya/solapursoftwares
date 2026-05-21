@@ -6,7 +6,7 @@ This guide serves as the official operational reference and compliance audit for
 
 ## 📋 Phase 10: Registry Readiness Audit
 
-Before submitting to any public MCP registries (such as the GitHub `modelcontextprotocol/servers` repository, Glama, or similar community index hubs), we must complete the following rigorous checklist to guarantee reliability.
+Before submitting to the official public MCP Registry, we must complete the following rigorous checklist to guarantee reliability.
 
 ### 1. Stability Verification
 *   [x] **Serverless Route**: `/api/mcp` is hosted on a highly reliable infrastructure (e.g. Vercel) with HTTPS active.
@@ -31,24 +31,61 @@ Before submitting to any public MCP registries (such as the GitHub `modelcontext
 
 ## 📤 Phase 11: Official MCP Registry Submission Package
 
-The official metadata descriptor has been compiled and saved to [docs/mcp-registry-package.json](mcp-registry-package.json) matching standard schema constraints.
+The official public listing path for third-party servers is the **MCP Registry**, governed at [github.com/modelcontextprotocol/registry](https://github.com/modelcontextprotocol/registry). The `modelcontextprotocol/servers` repository is reserved for reference implementations maintained by the steering group.
 
-### Submission Action Steps
+To publish our server, we must configure and run the official `mcp-publisher` command-line utility.
 
-To submit this server to the **official Model Context Protocol servers registry**:
+### 1. Initialize Registry Manifest (`server.json`)
+The registry mandates a `server.json` file detailing our server configuration. Create this file at the repository root:
 
-1.  **Fork the official repository**:
-    Go to [github.com/modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) and create a fork.
-2.  **Add a server profile**:
-    Create a new markdown page or directory descriptor inside the community submissions folder:
-    ```markdown
-    ### Solapur Software Developers Directory MCP
-    - **Description**: Public read-only MCP HTTP gateway to query verified technical professionals in Solapur, Maharashtra, India.
-    - **Endpoint**: `https://solapursoftwaredevelopers.dominal.in/api/mcp`
-    - **Source Code**: `https://github.com/mdyahhya/solapursoftwares`
+```json
+{
+  "name": "solapur-software-developers",
+  "version": "1.0.0",
+  "displayName": "Solapur Software Developers Registry",
+  "description": "Official read-only MCP HTTP gateway to query verified technical professionals in Solapur, Maharashtra, India.",
+  "homepage": "https://solapursoftwaredevelopers.dominal.in",
+  "repository": "https://github.com/mdyahhya/solapursoftwares",
+  "sourceCode": "https://github.com/mdyahhya/solapursoftwares",
+  "transport": "http",
+  "url": "https://solapursoftwaredevelopers.dominal.in/api/mcp",
+  "license": "MIT",
+  "category": "Directory & Business Data"
+}
+```
+
+### 2. Publishing Workflow using `mcp-publisher`
+
+1.  **Install the official Publisher CLI**:
+    ```bash
+    # Install the publisher CLI via Homebrew
+    brew install mcp-publisher
     ```
-3.  **Submit Pull Request**:
-    Commit your changes and submit a PR to the main repository. The automated test runners will verify query stability against our production endpoint.
+2.  **Initialize Configuration**:
+    ```bash
+    mcp-publisher init
+    ```
+3.  **Authenticate & Log In**:
+    Log in to verify your credentials. The CLI will authenticate using GitHub OAuth:
+    ```bash
+    mcp-publisher login github
+    ```
+4.  **Ownership Verification**:
+    To publish to your custom namespace (e.g. `in.dominal.solapursoftwaredevelopers.*` or `io.github.mdyahhya.*`), the registry enforces ownership verification.
+    *   **GitHub Namespace (`io.github.mdyahhya.*`)**: Automatically verified through GitHub OAuth login.
+    *   **Custom Domain Namespace (`in.dominal.solapursoftwaredevelopers.*`)**: Verified by either:
+        *   **DNS verification**: Creating a TXT record `_mcp-challenge.solapursoftwaredevelopers.dominal.in` with a challenge string.
+        *   **HTTP verification**: Uploading a challenge string to `https://solapursoftwaredevelopers.dominal.in/.well-known/mcp-challenge.txt`.
+5.  **Dry-Run Validation**:
+    Verify that your manifest schema and namespace variables are correct:
+    ```bash
+    mcp-publisher publish --dry-run
+    ```
+6.  **Official Publish Submission**:
+    Submit your manifest to the registry API:
+    ```bash
+    mcp-publisher publish
+    ```
 
 ---
 
