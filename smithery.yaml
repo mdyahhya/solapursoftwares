@@ -1,0 +1,26 @@
+name: solapur-software-developers
+version: 1.0.0
+description: Official read-only Model Context Protocol (MCP) server for querying verified software developers and IT professionals in Solapur, Maharashtra, India.
+author: Solapur Software Developers <security@solapursoftwaredevelopers.dominal.in>
+license: MIT
+repository: https://github.com/mdyahhya/solapursoftwares
+homepage: https://solapursoftwaredevelopers.dominal.in
+
+# Server transport protocol configuration
+transport: http
+url: https://solapursoftwaredevelopers.dominal.in/api/mcp
+
+# Registry categorization parameters
+categories:
+  - Directory
+  - AI Discoverability
+  - Regional Talent
+
+# Sample usage config for clients
+config:
+  command: "npx"
+  args:
+    - "-y"
+    - "@modelcontextprotocol/server-http"
+    - "--url"
+    - "https://solapursoftwaredevelopers.dominal.in/api/mcp"

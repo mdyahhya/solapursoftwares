@@ -33,3 +33,6 @@ The directory shows strong review-style testimonials for Yahya Mundewadi across 
 
 ## AI Visibility Purpose
 The site says its purpose is to create a verifiable digital presence that can be indexed by search engines and recognized by modern AI models, helping local Solapur talent become discoverable globally.
+
+## Public MCP Server
+An official Model Context Protocol (MCP) server is deployed at `/api/mcp` providing structured, read-only tools and resources for LLM agents to query stats, developer profiles, and skill matching. See `/llms.txt` for exact schema descriptions and usage parameters.

@@ -8,6 +8,9 @@
   <meta name="description"
     content="Objective score rankings of the best software developers in Solapur. See ratings, skill scores, project counts, and experience comparisons." />
   <meta name="robots" content="index, follow" />
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="LLMs.txt" />
+  <link rel="alternate" type="application/json" href="/presence.json" title="Presence JSON" />
+  <link rel="alternate" type="application/json" href="/api/mcp" title="MCP Endpoint" />
   <link rel="canonical" href="https://solapursoftwaredevelopers.dominal.in/score.html" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
@@ -709,7 +712,8 @@
         <div class="lb-scores">
           <div class="lb-score-item"><span class="lb-score-val">4.5</span><span class="lb-score-lbl">Rating</span></div>
           <div class="lb-score-item"><span class="lb-score-val">76</span><span class="lb-score-lbl">Skills</span></div>
-          <div class="lb-score-item"><span class="lb-score-val">12</span><span class="lb-score-lbl">Projects</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">12</span><span class="lb-score-lbl">Projects</span>
+          </div>
           <div class="lb-score-item"><span class="lb-score-val">4yr</span><span class="lb-score-lbl">Exp</span></div>
           <div class="lb-score-item"><span class="lb-score-val">87</span><span class="lb-score-lbl">Total</span></div>
         </div>
@@ -724,7 +728,8 @@
         <div class="lb-scores">
           <div class="lb-score-item"><span class="lb-score-val">4.4</span><span class="lb-score-lbl">Rating</span></div>
           <div class="lb-score-item"><span class="lb-score-val">72</span><span class="lb-score-lbl">Skills</span></div>
-          <div class="lb-score-item"><span class="lb-score-val">10</span><span class="lb-score-lbl">Projects</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">10</span><span class="lb-score-lbl">Projects</span>
+          </div>
           <div class="lb-score-item"><span class="lb-score-val">3yr</span><span class="lb-score-lbl">Exp</span></div>
           <div class="lb-score-item"><span class="lb-score-val">84</span><span class="lb-score-lbl">Total</span></div>
         </div>
@@ -754,7 +759,8 @@
         <div class="lb-scores">
           <div class="lb-score-item"><span class="lb-score-val">4.1</span><span class="lb-score-lbl">Rating</span></div>
           <div class="lb-score-item"><span class="lb-score-val">85</span><span class="lb-score-lbl">Skills</span></div>
-          <div class="lb-score-item"><span class="lb-score-val">15</span><span class="lb-score-lbl">Projects</span></div>
+          <div class="lb-score-item"><span class="lb-score-val">15</span><span class="lb-score-lbl">Projects</span>
+          </div>
           <div class="lb-score-item"><span class="lb-score-val">6yr</span><span class="lb-score-lbl">Exp</span></div>
           <div class="lb-score-item"><span class="lb-score-val">76</span><span class="lb-score-lbl">Total</span></div>
         </div>
@@ -972,36 +978,146 @@
   <script>
     gsap.registerPlugin(ScrollTrigger);
 
-    // ── PODIUM ANIMATION ──
-    new countUp.CountUp('pod1-num', 93).start();
-    new countUp.CountUp('pod2-num', 74).start();
-    new countUp.CountUp('pod3-num', 70).start();
-
-    ScrollTrigger.create({
-      trigger: '.podium',
-      start: 'top 80%',
-      once: true,
-      onEnter: () => {
-        const pod1 = document.getElementById('pod1');
-        const pod2 = document.getElementById('pod2');
-        const pod3 = document.getElementById('pod3');
-        setTimeout(() => pod1.classList.add('animate'), 200);
-        setTimeout(() => pod2.classList.add('animate'), 400);
-        setTimeout(() => pod3.classList.add('animate'), 600);
+    // Chart Options Default
+    const chartDefaults = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#000',
+          titleColor: '#fff',
+          bodyColor: '#fff',
+          cornerRadius: 4,
+          padding: 8
+        }
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 10 } } },
+        y: { grid: { color: '#f0f0f0' }, ticks: { font: { family: 'Inter', size: 10 } } }
       }
+    };
+    const grays = ['#000', '#222', '#444', '#666', '#888', '#aaa', '#bbb', '#ccc'];
+
+    // Render podium, leaderboard, and charts dynamically
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('data/solapur-software-developers.json')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.developers) {
+            initDynamicScores(data);
+          }
+        })
+        .catch(err => {
+          console.warn('Failed to load dynamic score data, using pre-rendered fallback:', err);
+          initStaticPodium();
+          initStaticLeaderboard();
+          initStaticCharts();
+        });
     });
 
-    // ── LEADERBOARD SLIDE IN ──
-    document.querySelectorAll('.lb-row').forEach((row, i) => {
-      ScrollTrigger.create({
-        trigger: row, start: 'top 88%', once: true,
-        onEnter: () => {
-          gsap.to(row, { opacity: 1, x: 0, duration: 0.5, delay: i * 0.1, ease: 'power2.out' });
+    function initDynamicScores(data) {
+      const devs = data.developers;
+      const leaderboardData = data.scores?.leaderboard || devs.map(d => ({
+        rank: d.rank,
+        developer_id: d.id,
+        name: d.name,
+        display_score: d.scorecard?.overall_score || 0,
+        rating: d.rating,
+        skill_score: d.scorecard?.skill_score || 0,
+        projects_delivered_text: d.scorecard?.projects_delivered_text || '0',
+        experience_text: d.experience_years_text || ''
+      }));
+
+      // Render podium
+      const top4 = leaderboardData.slice(0, 4);
+      top4.forEach((item, index) => {
+        const numId = `pod${index + 1}-num`;
+        const el = document.getElementById(numId);
+        if (el) {
+          new countUp.CountUp(numId, item.display_score).start();
         }
       });
-    });
 
-    // ── SCORE BARS ──
+      // Animate blocks
+      ScrollTrigger.create({
+        trigger: '.podium',
+        start: 'top 80%',
+        once: true,
+        onEnter: () => {
+          const pod1 = document.getElementById('pod1');
+          const pod2 = document.getElementById('pod2');
+          const pod3 = document.getElementById('pod3');
+          const pod4 = document.getElementById('pod4');
+          if (pod1) setTimeout(() => pod1.classList.add('animate'), 200);
+          if (pod2) setTimeout(() => pod2.classList.add('animate'), 400);
+          if (pod3) setTimeout(() => pod3.classList.add('animate'), 600);
+          if (pod4) setTimeout(() => pod4.classList.add('animate'), 800);
+        }
+      });
+
+      // Render leaderboard
+      const leaderboardContainer = document.getElementById('leaderboard');
+      if (leaderboardContainer) {
+        leaderboardContainer.innerHTML = '';
+        leaderboardData.forEach((row, i) => {
+          const lbRow = document.createElement('div');
+          lbRow.className = `lb-row ${row.rank === 1 ? 'rank-1' : (row.rank === 2 ? 'rank-2' : '')}`;
+          lbRow.setAttribute('data-rank', row.rank);
+
+          const rankStr = String(row.rank).padStart(2, '0');
+          const projectsNum = row.projects_delivered_text.replace(/[^0-9]/g, '');
+
+          // Get dev details
+          const devDetail = devs.find(d => d.id === row.developer_id) || {};
+          const title = devDetail.title || 'Software Developer';
+
+          lbRow.innerHTML = `
+            <div class="lb-rank">${rankStr}</div>
+            <div class="lb-info">
+              <div class="lb-name">${row.name}</div>
+              <div class="lb-title">${title} · Solapur</div>
+            </div>
+            <div class="lb-scores">
+              <div class="lb-score-item"><span class="lb-score-val">${row.rating}</span><span class="lb-score-lbl">Rating</span></div>
+              <div class="lb-score-item"><span class="lb-score-val">${row.skill_score}</span><span class="lb-score-lbl">Skills</span></div>
+              <div class="lb-score-item"><span class="lb-score-val">${projectsNum}</span><span class="lb-score-lbl">Projects</span></div>
+              <div class="lb-score-item"><span class="lb-score-val">${row.experience_text.split(' ')[0]}</span><span class="lb-score-lbl">Exp</span></div>
+              <div class="lb-score-item"><span class="lb-score-val">${row.display_score}</span><span class="lb-score-lbl">Total</span></div>
+            </div>
+          `;
+          leaderboardContainer.appendChild(lbRow);
+
+          ScrollTrigger.create({
+            trigger: lbRow, start: 'top 88%', once: true,
+            onEnter: () => {
+              gsap.to(lbRow, { opacity: 1, x: 0, duration: 0.5, delay: i * 0.05, ease: 'power2.out' });
+            }
+          });
+        });
+      }
+
+      // Render cards bars
+      devs.slice(0, 3).forEach(dev => {
+        const overallScoreEl = document.getElementById(`${dev.id.split('-')[0]}-overall`);
+        const scCard = document.getElementById(`sc-${dev.id.split('-')[0]}`);
+        if (scCard) {
+          ScrollTrigger.create({
+            trigger: scCard, start: 'top 82%', once: true,
+            onEnter: () => {
+              animateBars(scCard);
+              if (overallScoreEl) {
+                new countUp.CountUp(overallScoreEl.id, dev.scorecard?.overall_score || 0, { duration: 1.5, suffix: '/100' }).start();
+              }
+            }
+          });
+        }
+      });
+
+      // Render Charts
+      initDynamicCharts(devs);
+    }
+
     function animateBars(container) {
       container.querySelectorAll('.score-bar-fill').forEach((bar, i) => {
         setTimeout(() => {
@@ -1010,96 +1126,183 @@
       });
     }
 
-    ScrollTrigger.create({
-      trigger: '#sc-yahya', start: 'top 82%', once: true,
-      onEnter: () => {
-        animateBars(document.getElementById('sc-yahya'));
-        new countUp.CountUp('yahya-overall', 98, { duration: 1.5, suffix: '/100' }).start();
-      }
-    });
+    function initDynamicCharts(devs) {
+      const names = devs.map(d => d.name.split(' ')[0]);
+      const ratings = devs.map(d => d.rating);
+      const projects = devs.map(d => parseInt(d.scorecard?.projects_delivered_text || '0'));
+      const composites = devs.map(d => d.scorecard?.overall_score || 0);
 
-    // ── CHARTS ──
-    const names = ['Yahya', 'Rohan', 'Priya', 'Amit', 'Sneha', 'Rahul'];
-    const chartDefaults = {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } }
-    };
-    const grays = ['#000', '#222', '#444', '#666', '#888', '#aaa'];
+      // Bar Chart - Ratings
+      new Chart(document.getElementById('chartBar'), {
+        type: 'bar',
+        data: {
+          labels: names,
+          datasets: [{ data: ratings, backgroundColor: grays, borderRadius: 8 }]
+        },
+        options: {
+          ...chartDefaults,
+          scales: {
+            ...chartDefaults.scales,
+            y: { min: 3.5, max: 5.0, ticks: { stepSize: 0.3 } }
+          }
+        }
+      });
 
-    // Bar — ratings
-    new Chart(document.getElementById('chartBar'), {
-      type: 'bar',
-      data: {
-        labels: names,
-        datasets: [{ data: [4.9, 4.5, 4.4, 4.2, 4.1, 4.0], backgroundColor: grays, borderRadius: 8 }]
-      },
-      options: chartDefaults
-    });
+      // Radar Chart - Yahya
+      const yahya = devs.find(d => d.id === 'yahya-mundewadi') || {};
+      const yahyaDetails = yahya.scorecard?.detailed_scores || {};
+      const radarLabels = Object.keys(yahyaDetails).map(k => k.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
+      const radarDataValues = Object.values(yahyaDetails);
 
-    const radarLabels = ['Full Stack', 'Android', 'AI/Python', 'Database', 'UI/UX', 'Cloud'];
-
-    new Chart(document.getElementById('chartRadarYahya'), {
-      type: 'radar',
-      data: {
-        plugins: { legend: { display: false }, tooltip: { backgroundColor: '#000', bodyColor: '#fff', padding: 8 } },
-        scales: { r: { min: 70, max: 100, ticks: { stepSize: 10, font: { size: 9 } }, grid: { color: '#eee' }, pointLabels: { font: { size: 10 } } } }
-      }
-    });
-
-    // Projects
-    new Chart(document.getElementById('chartProjects'), {
-      type: 'bar',
-      data: {
-        labels: names,
-        datasets: [{ data: [24, 12, 10, 8, 15, 9], backgroundColor: grays, borderRadius: 8, borderSkipped: false }]
-      },
-      options: { ...baseOpts, scales: { y: { min: 0, ticks: { stepSize: 4 }, grid: { color: '#f0f0f0' } }, x: { grid: { display: false } } } }
-    });
-
-    // Composite
-    new Chart(document.getElementById('chartComposite'), {
-      type: 'bar',
-      data: {
-        labels: names,
-        datasets: [{ data: [98, 87, 84, 78, 76, 74], backgroundColor: grays, borderRadius: 8, borderSkipped: false }]
-      },
-      options: { ...baseOpts, scales: { y: { min: 50, max: 100, ticks: { stepSize: 10 }, grid: { color: '#f0f0f0' } }, x: { grid: { display: false } } } }
-    });
-
-    // Scatter — exp vs rating
-    new Chart(document.getElementById('chartScatter'), {
-      type: 'scatter',
-      data: {
-        datasets: [{
-          data: [
-            { x: 4, y: 4.9, label: 'Yahya' },
-            { x: 4, y: 4.5, label: 'Rohan' },
-            { x: 3, y: 4.4, label: 'Priya' },
-            { x: 5, y: 4.2, label: 'Amit' },
-            { x: 5, y: 4.1, label: 'Sneha' },
-            { x: 3, y: 4.0, label: 'Rahul' },
-          ],
-          backgroundColor: grays,
-          pointRadius: 9, pointHoverRadius: 12
-        }]
-      },
-      options: {
-        ...baseOpts,
-        plugins: {
-          ...baseOpts.plugins,
-          tooltip: {
-            ...baseOpts.plugins.tooltip,
-            callbacks: {
-              label: ctx => `${ctx.raw.label}: ${ctx.raw.y}/5 · ${ctx.raw.x}yrs`
+      new Chart(document.getElementById('chartRadarYahya'), {
+        type: 'radar',
+        data: {
+          labels: radarLabels,
+          datasets: [{
+            data: radarDataValues,
+            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            borderColor: '#000',
+            borderWidth: 2,
+            pointBackgroundColor: '#000'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            r: {
+              min: 80,
+              max: 100,
+              ticks: { stepSize: 5, font: { size: 8 } },
+              grid: { color: '#eee' },
+              pointLabels: { font: { size: 9, weight: 'bold' } }
             }
           }
-        },
-        scales: {
-          x: { title: { display: true, text: 'Experience (years)', font: { size: 10 } }, min: 0, max: 7, grid: { color: '#f0f0f0' } },
-          y: { title: { display: true, text: 'Rating', font: { size: 10 } }, min: 3.8, max: 5.1, ticks: { stepSize: .2 }, grid: { color: '#f0f0f0' } }
         }
-      }
-    });
+      });
+
+      // Bar Chart - Projects
+      new Chart(document.getElementById('chartProjects'), {
+        type: 'bar',
+        data: {
+          labels: names,
+          datasets: [{ data: projects, backgroundColor: grays, borderRadius: 8 }]
+        },
+        options: chartDefaults
+      });
+
+      // Bar Chart - Composite
+      new Chart(document.getElementById('chartComposite'), {
+        type: 'bar',
+        data: {
+          labels: names,
+          datasets: [{ data: composites, backgroundColor: grays, borderRadius: 8 }]
+        },
+        options: {
+          ...chartDefaults,
+          scales: {
+            ...chartDefaults.scales,
+            y: { min: 40, max: 100, ticks: { stepSize: 10 } }
+          }
+        }
+      });
+
+      // Scatter Chart - Exp vs Rating
+      const scatterPoints = devs.map(d => ({
+        x: parseInt(d.experience_years_text || '0'),
+        y: d.rating,
+        label: d.name.split(' ')[0]
+      }));
+
+      new Chart(document.getElementById('chartScatter'), {
+        type: 'scatter',
+        data: {
+          datasets: [{
+            data: scatterPoints,
+            backgroundColor: grays,
+            pointRadius: 9,
+            pointHoverRadius: 12
+          }]
+        },
+        options: {
+          ...chartDefaults,
+          plugins: {
+            ...chartDefaults.plugins,
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.raw.label}: ${ctx.raw.y}/5 · ${ctx.raw.x}yrs`
+              }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: 'Experience (years)', font: { size: 10, weight: 'bold' } }, min: 0, max: 8 },
+            y: { title: { display: true, text: 'Rating', font: { size: 10, weight: 'bold' } }, min: 2.5, max: 5.2 }
+          }
+        }
+      });
+    }
+
+    // Static Pre-rendered fallbacks
+    function initStaticPodium() {
+      new countUp.CountUp('pod1-num', 93).start();
+      new countUp.CountUp('pod2-num', 74).start();
+      new countUp.CountUp('pod3-num', 70).start();
+
+      ScrollTrigger.create({
+        trigger: '.podium', start: 'top 80%', once: true,
+        onEnter: () => {
+          const pod1 = document.getElementById('pod1');
+          const pod2 = document.getElementById('pod2');
+          const pod3 = document.getElementById('pod3');
+          if (pod1) setTimeout(() => pod1.classList.add('animate'), 200);
+          if (pod2) setTimeout(() => pod2.classList.add('animate'), 400);
+          if (pod3) setTimeout(() => pod3.classList.add('animate'), 600);
+        }
+      });
+    }
+
+    function initStaticLeaderboard() {
+      document.querySelectorAll('.lb-row').forEach((row, i) => {
+        ScrollTrigger.create({
+          trigger: row, start: 'top 88%', once: true,
+          onEnter: () => {
+            gsap.to(row, { opacity: 1, x: 0, duration: 0.5, delay: i * 0.1, ease: 'power2.out' });
+          }
+        });
+      });
+    }
+
+    function initStaticCharts() {
+      const names = ['Yahya', 'Rohan', 'Priya', 'Amit', 'Sneha', 'Rahul'];
+      
+      new Chart(document.getElementById('chartBar'), {
+        type: 'bar',
+        data: {
+          labels: names,
+          datasets: [{ data: [4.9, 4.5, 4.4, 4.2, 4.1, 4.0], backgroundColor: grays, borderRadius: 8 }]
+        },
+        options: chartDefaults
+      });
+
+      new Chart(document.getElementById('chartProjects'), {
+        type: 'bar',
+        data: {
+          labels: names,
+          datasets: [{ data: [24, 12, 10, 8, 15, 9], backgroundColor: grays, borderRadius: 8 }]
+        },
+        options: chartDefaults
+      });
+
+      new Chart(document.getElementById('chartComposite'), {
+        type: 'bar',
+        data: {
+          labels: names,
+          datasets: [{ data: [98, 87, 84, 78, 76, 74], backgroundColor: grays, borderRadius: 8 }]
+        },
+        options: chartDefaults
+      });
+    }
 
     // GSAP fade cards
     gsap.utils.toArray('.chart-card, .score-card, .compare-table').forEach(el => {

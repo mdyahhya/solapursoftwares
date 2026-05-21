@@ -1,0 +1,70 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/registry-submission.json",
+  "name": "solapur-software-developers",
+  "version": "1.0.0",
+  "displayName": "Solapur Software Developers Directory MCP Server",
+  "description": "Official read-only MCP HTTP gateway to query the verified registry database of software professionals and web developers in Solapur, Maharashtra, India. Provides tools for list filtering, detail query, and skill search.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mdyahhya/solapursoftwares.git"
+  },
+  "homepage": "https://solapursoftwaredevelopers.dominal.in",
+  "mcpEndpoint": "https://solapursoftwaredevelopers.dominal.in/api/mcp",
+  "transport": "http",
+  "category": "Directory & Business Data",
+  "keywords": [
+    "solapur",
+    "software-developers",
+    "it-professionals",
+    "india-tech",
+    "verified-directory",
+    "model-context-protocol"
+  ],
+  "author": {
+    "name": "Solapur Software Developers",
+    "email": "security@solapursoftwaredevelopers.dominal.in"
+  },
+  "license": "MIT",
+  "ecosystemCompatibility": {
+    "claudeDesktop": "Verified",
+    "cursor": "Verified",
+    "windsurf": "Verified",
+    "copilotWorkspace": "Compatible"
+  },
+  "registryMetadata": {
+    "listingTitle": "Solapur Software Developers Directory",
+    "shortSummary": "Query the top software developers, tech experts, and IT talents in Solapur, Maharashtra via public MCP.",
+    "toolsExposed": [
+      {
+        "name": "get_company_info",
+        "description": "Ecosystem overview and metadata."
+      },
+      {
+        "name": "list_developers",
+        "description": "List developers sorted by score, supporting minRating and limit filters."
+      },
+      {
+        "name": "get_developer_profile",
+        "description": "Deep dive profile containing notable projects and reviews."
+      },
+      {
+        "name": "find_developers_by_skill",
+        "description": "Search profiles containing specified technical skill."
+      }
+    ],
+    "resourcesExposed": [
+      {
+        "uri": "site://developers",
+        "name": "All Developers Database"
+      },
+      {
+        "uri": "site://leaderboard",
+        "name": "Directory Rankings & Scorecard parameters"
+      },
+      {
+        "uri": "site://faq",
+        "name": "Frequently Asked Questions"
+      }
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+name: 🐛 Bug Report
+description: Report a bug, broken link, layout issue, or MCP protocol mismatch.
+title: "[BUG]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for helping us maintain registry quality! Please provide a descriptive summary of the problem.
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      placeholder: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction_steps
+    attributes:
+      label: Steps To Reproduce
+      placeholder: |
+        1. Go to page '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      placeholder: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment Info
+      placeholder: e.g. Chrome 124, Windows 11, Cursor IDE / Claude Desktop MCP client
+  - type: textarea
+    id: console_logs
+    attributes:
+      label: Context / Console Logs
+      placeholder: Paste any browser console errors or MCP command output here if applicable.

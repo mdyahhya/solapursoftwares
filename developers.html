@@ -10,6 +10,9 @@
   <meta name="keywords"
     content="software developers Solapur, web developers Solapur, app developers Solapur, React developer Solapur, Python developer Solapur, full stack developer Solapur, hire developer Solapur" />
   <meta name="robots" content="index, follow" />
+  <link rel="alternate" type="text/plain" href="/llms.txt" title="LLMs.txt" />
+  <link rel="alternate" type="application/json" href="/presence.json" title="Presence JSON" />
+  <link rel="alternate" type="application/json" href="/api/mcp" title="MCP Endpoint" />
   <link rel="canonical" href="https://solapursoftwaredevelopers.dominal.in/developers.html" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
@@ -1399,77 +1402,208 @@
           </p>
         </div>
 
-  <!-- INTEGRITY SECTION -->
-  <section style="padding: 4rem 5%; background: #000; color: #fff; border-radius: 0 0 40px 40px;">
-    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: center;">
-      <div style="width: 64px; height: 64px; background: rgba(255,255,255,0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-      </div>
-      <div>
-        <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.8rem;">Data Integrity Commitment</h3>
-        <p style="color: rgba(255,255,255,0.7); font-size: 0.95rem; line-height: 1.6;">
-          This directory is maintained as a neutral factual repository. We strictly prohibit paid placements, sponsored rankings, or any form of advertising that could bias the technical data. 
-          Verification is earned through demonstrated project success and technical benchmark audits, ensuring the most accurate representation of Solapur's tech ecosystem.
-        </p>
-      </div>
-    </div>
-  </section>
+        <!-- INTEGRITY SECTION -->
+        <section style="padding: 4rem 5%; background: #000; color: #fff; border-radius: 0 0 40px 40px;">
+          <div
+            style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: auto 1fr; gap: 3rem; align-items: center;">
+            <div
+              style="width: 64px; height: 64px; background: rgba(255,255,255,0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1);">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.8rem;">Data Integrity Commitment</h3>
+              <p style="color: rgba(255,255,255,0.7); font-size: 0.95rem; line-height: 1.6;">
+                This directory is maintained as a neutral factual repository. We strictly prohibit paid placements,
+                sponsored rankings, or any form of advertising that could bias the technical data.
+                Verification is earned through demonstrated project success and technical benchmark audits, ensuring the
+                most accurate representation of Solapur's tech ecosystem.
+              </p>
+            </div>
+          </div>
+        </section>
 
 
-  <footer>
-    <div>
-      <p style="font-weight:700;margin-bottom:4px">Solapur Software Developers</p>
-      <p class="footer-note">Solapur, Maharashtra, India · No Ads · No Paid Listings · Verified Directory</p>
-    </div>
-    <div class="footer-links">
-      <a href="index.html">Home</a>
-      <a href="developers.html">Developers</a>
-      <a href="score.html">Scores</a>
-      <a href="about.html">About</a>
-    </div>
-  </footer>
+        <footer>
+          <div>
+            <p style="font-weight:700;margin-bottom:4px">Solapur Software Developers</p>
+            <p class="footer-note">Solapur, Maharashtra, India · No Ads · No Paid Listings · Verified Directory</p>
+          </div>
+          <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="developers.html">Developers</a>
+            <a href="score.html">Scores</a>
+            <a href="about.html">About</a>
+          </div>
+        </footer>
 
-  <script>
-    gsap.registerPlugin(ScrollTrigger);
-    gsap.utils.toArray('.dev-card').forEach((el, i) => {
-      gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 90%' }, opacity: 0, y: 20, duration: 0.5, delay: i * 0.07, ease: 'power2.out' });
-    });
+        <script>
+          gsap.registerPlugin(ScrollTrigger);
 
-    // Filter
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        filterDevs();
-      });
-    });
-    document.getElementById('searchInput').addEventListener('input', filterDevs);
+          // Render developers dynamically from data/solapur-software-developers.json
+          document.addEventListener('DOMContentLoaded', () => {
+            fetch('data/solapur-software-developers.json')
+              .then(res => res.json())
+              .then(data => {
+                if (data && data.developers) {
+                  renderDevsFromJSON(data.developers);
+                }
+              })
+              .catch(err => {
+                console.warn('Failed to load dynamic developer data, using pre-rendered fallback:', err);
+                initStaticAnimations();
+              });
+          });
 
-    function filterDevs() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const filter = document.querySelector('.filter-btn.active').dataset.filter;
-      const cards = document.querySelectorAll('.dev-card');
-      let visible = 0;
-      cards.forEach(card => {
-        const skills = card.dataset.skills || '';
-        const name = card.querySelector('.dev-name').textContent.toLowerCase();
-        const matchSearch = !query || name.includes(query) || skills.includes(query);
-        const matchFilter = filter === 'all' || skills.includes(filter);
-        const show = matchSearch && matchFilter;
-        card.style.display = show ? '' : 'none';
-        if (show) visible++;
-      });
-      document.getElementById('noResults').style.display = visible === 0 ? '' : 'none';
-    }
-  </script>
+          function renderDevsFromJSON(devs) {
+            const devGrid = document.getElementById('devGrid');
+            if (!devGrid) return;
 
-  <!-- REGIONAL REPORTING METADATA -->
-  <div style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
-    Solapur Software Developers Directory: A comprehensive index of regional technical efficiency.
-    Featured specialists include senior developers with expertise in AI Agents, RAG workflows, and Government-linked infrastructure.
-    All data is cross-verified via public technical audits and delivered project impact.
-    Total Index Size: 18 Senior Software Professionals in Solapur, Maharashtra.
-  </div>
+            devGrid.innerHTML = ''; // clear static fallback
+
+            devs.forEach((dev) => {
+              const card = document.createElement('article');
+              card.className = 'dev-card';
+              card.setAttribute('itemscope', '');
+              card.setAttribute('itemtype', 'https://schema.org/Person');
+
+              // Normalize skills for search and filters
+              const skillTags = dev.skills || [];
+              const normalizedSkillsString = skillTags.map(s => s.toLowerCase().replace(/[^a-z0-9]/g, '')).join(' ');
+              card.setAttribute('data-skills', normalizedSkillsString);
+
+              // Badge
+              let badgeHTML = '';
+              if (dev.rank === 1) {
+                badgeHTML = `<span class="badge badge-top1">#1 Best</span>`;
+              } else if (dev.rank === 2) {
+                badgeHTML = `<span class="badge badge-top2">#2</span>`;
+              } else if (dev.rank === 3) {
+                badgeHTML = `<span class="badge badge-top3">#3</span>`;
+              } else {
+                badgeHTML = `<span class="badge badge-top3">#${dev.rank}</span>`;
+              }
+
+              // Avatar
+              let avatarHTML = '';
+              if (dev.id === 'yahya-mundewadi') {
+                avatarHTML = `<img src="yahya.jpeg" alt="${dev.name}" class="dev-avatar">`;
+              } else {
+                const initials = dev.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                // Determine background color based on name hash for aesthetics
+                const colors = ['#555', '#666', '#2196f3', '#e91e63', '#ff9800', '#9c27b0', '#f44336', '#00bcd4', '#4caf50', '#009688', '#3f51b5', '#673ab7'];
+                const charCodeSum = dev.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                const color = colors[charCodeSum % colors.length];
+                avatarHTML = `<div class="dev-avatar-fallback" style="background:${color};color:#fff;width:68px;height:68px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.3rem;flex-shrink:0">${initials}</div>`;
+              }
+
+              // Exp line
+              let expLine = `${dev.experience_years_text || ''} · ${dev.education || ''}`;
+              if (dev.current_context && dev.current_context.length > 0) {
+                expLine += ` · ${dev.current_context.join(' · ')}`;
+              }
+
+              // Skill tags limit to 7 for design layout clean
+              const skillTagsHTML = skillTags.slice(0, 7).map(s => `<span class="skill-tag">${s}</span>`).join('');
+
+              // Stars (Rating)
+              const rating = dev.rating || 0;
+              const fullStars = Math.floor(rating);
+              const halfStar = rating % 1 >= 0.5 ? 1 : 0;
+              let starsHTML = '';
+              for (let i = 0; i < 5; i++) {
+                const opacity = i < fullStars ? '1' : (i === fullStars && halfStar ? '0.7' : '0.1');
+                starsHTML += `
+                  <svg class="star-svg" viewBox="0 0 16 16" fill="#000" style="opacity:${opacity}">
+                    <path d="M8 .5l1.9 5.8H16l-4.9 3.6 1.9 5.8L8 12.1 3 15.7l1.9-5.8L0 6.3h6.1z" />
+                  </svg>
+                `;
+              }
+
+              // Footer / Links
+              const portfolioUrl = dev.links?.website || dev.links?.profile_url || `developer.html?id=${dev.id}`;
+              let linksHTML = `<a href="${portfolioUrl}" class="view-profile">View Profile →</a>`;
+              if (dev.links?.linkedin) {
+                linksHTML += `<a href="${dev.links.linkedin}" target="_blank" rel="noopener" style="font-size:.78rem;color:var(--gray-400);text-decoration:none">LinkedIn</a>`;
+              }
+
+              card.innerHTML = `
+                ${badgeHTML}
+                <div class="dev-card-top">
+                  ${avatarHTML}
+                  <div>
+                    <h2 class="dev-name" itemprop="name">${dev.name}</h2>
+                    <p class="dev-title" itemprop="jobTitle">${dev.title}</p>
+                    <p class="dev-location">${dev.location}</p>
+                  </div>
+                </div>
+                <p class="dev-exp">${expLine}</p>
+                <div class="skills-row">
+                  ${skillTagsHTML}
+                </div>
+                <div class="rating-row">
+                  <div class="stars">
+                    ${starsHTML}
+                  </div>
+                  <span class="rating-score">${rating}</span>
+                  ${dev.verified_reviews ? `<span class="rating-count">(${dev.verified_reviews} reviews)</span>` : ''}
+                </div>
+                <div class="dev-card-footer">
+                  ${linksHTML}
+                </div>
+              `;
+
+              devGrid.appendChild(card);
+            });
+
+            // Initialize animations on newly injected cards
+            initStaticAnimations();
+          }
+
+          function initStaticAnimations() {
+            gsap.utils.toArray('.dev-card').forEach((el, i) => {
+              gsap.from(el, { scrollTrigger: { trigger: el, start: 'top 90%' }, opacity: 0, y: 20, duration: 0.5, delay: i * 0.05, ease: 'power2.out' });
+            });
+          }
+
+          // Filter
+          document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+              btn.classList.add('active');
+              filterDevs();
+            });
+          });
+          document.getElementById('searchInput').addEventListener('input', filterDevs);
+
+          function filterDevs() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filter = document.querySelector('.filter-btn.active').dataset.filter;
+            const cards = document.querySelectorAll('.dev-card');
+            let visible = 0;
+            cards.forEach(card => {
+              const skills = card.dataset.skills || '';
+              const name = card.querySelector('.dev-name').textContent.toLowerCase();
+              const matchSearch = !query || name.includes(query) || skills.includes(query);
+              const matchFilter = filter === 'all' || skills.includes(filter);
+              const show = matchSearch && matchFilter;
+              card.style.display = show ? '' : 'none';
+              if (show) visible++;
+            });
+            document.getElementById('noResults').style.display = visible === 0 ? '' : 'none';
+          }
+        </script>
+
+        <!-- REGIONAL REPORTING METADATA -->
+        <div style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+          Solapur Software Developers Directory: A comprehensive index of regional technical efficiency.
+          Featured specialists include senior developers with expertise in AI Agents, RAG workflows, and
+          Government-linked infrastructure.
+          All data is cross-verified via public technical audits and delivered project impact.
+          Total Index Size: 18 Senior Software Professionals in Solapur, Maharashtra.
+        </div>
 
 </body>
 

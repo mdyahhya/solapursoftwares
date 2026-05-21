@@ -1,0 +1,40 @@
+name: ✏️ Profile Update Request
+description: Request updates to an existing developer profile in the registry database.
+title: "[UPDATE]: "
+labels: ["profile", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template to request modifications, add new projects, update skills, or amend contact details for an existing profile.
+  - type: input
+    id: developer_id
+    attributes:
+      label: Developer ID / Profile Name
+      placeholder: e.g. yahya-mundewadi
+    validations:
+      required: true
+  - type: textarea
+    id: requested_changes
+    attributes:
+      label: Description of Changes
+      placeholder: |
+        Please specify exactly what needs to be changed, added, or removed.
+        - Old value: ...
+        - New value: ...
+    validations:
+      required: true
+  - type: textarea
+    id: verification_links
+    attributes:
+      label: Verification Links / Supporting Evidence
+      placeholder: Provide public links supporting the requested updates (e.g. new GitHub repo, project URL, certification).
+    validations:
+      required: true
+  - type: checkboxes
+    id: authorization
+    attributes:
+      label: Authorization
+      options:
+        - label: I confirm that I am either the profile owner or have authorized credentials to submit these changes.
+          required: true

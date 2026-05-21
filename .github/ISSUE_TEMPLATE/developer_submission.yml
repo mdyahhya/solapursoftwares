@@ -1,0 +1,78 @@
+name: 🚀 Developer Profile Submission
+description: Submit a new developer profile to be indexed and ranked in the Solapur Software Developers directory.
+title: "[SUBMISSION]: "
+labels: ["profile", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for submitting a developer profile! Please provide accurate, verifiable links. Submissions are reviewed by our validation pipeline (Repo Audit, Impact Check, and Technical Rank) before being indexed.
+  - type: input
+    id: full_name
+    attributes:
+      label: Full Name
+      placeholder: e.g. Rohan Patil
+    validations:
+      required: true
+  - type: input
+    id: professional_title
+    attributes:
+      label: Professional Title
+      placeholder: e.g. Full Stack Developer, MERN Specialist
+    validations:
+      required: true
+  - type: textarea
+    id: bio
+    attributes:
+      label: Short Bio / About
+      placeholder: Describe your experience, focus area, and background.
+    validations:
+      required: true
+  - type: input
+    id: experience_years
+    attributes:
+      label: Years of Professional Experience
+      placeholder: e.g. 3 years
+    validations:
+      required: true
+  - type: textarea
+    id: skills
+    attributes:
+      label: Technical Skills
+      placeholder: List your primary skills separated by commas (e.g. React, Node.js, Python, Supabase).
+    validations:
+      required: true
+  - type: textarea
+    id: projects
+    attributes:
+      label: Notable Verifiable Projects
+      placeholder: |
+        Provide links/evidence of real projects.
+        1. Project Name: Description (URL)
+        2. Project Name: Description (URL)
+    validations:
+      required: true
+  - type: input
+    id: github_url
+    attributes:
+      label: GitHub Profile URL
+      placeholder: https://github.com/username
+    validations:
+      required: true
+  - type: input
+    id: linkedin_url
+    attributes:
+      label: LinkedIn Profile URL
+      placeholder: https://linkedin.com/in/username
+  - type: input
+    id: personal_website
+    attributes:
+      label: Personal Website / Portfolio URL
+      placeholder: https://yourdomain.com
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Verifiability Agreement
+      options:
+        - label: I agree that all submitted information is public, non-sensitive, and subject to technical auditing and verification.
+          required: true
