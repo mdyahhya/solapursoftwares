@@ -35,3 +35,10 @@ Thumbs.db
 dist/
 build/
 out/
+
+# MCP Publisher CLI binaries & downloads
+mcp-publisher.exe
+mcp-publisher.tar.gz
+
+# Vercel deployment cache and outputs
+.vercel/
