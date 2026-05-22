@@ -1,13 +1,18 @@
 {
-  "name": "solapur-software-developers",
-  "version": "1.0.0",
-  "displayName": "Solapur Software Developers Registry",
-  "description": "Official read-only MCP HTTP gateway to query verified technical professionals in Solapur, Maharashtra, India.",
-  "homepage": "https://solapursoftwaredevelopers.dominal.in",
-  "repository": "https://github.com/mdyahhya/solapursoftwares",
-  "sourceCode": "https://github.com/mdyahhya/solapursoftwares",
-  "transport": "http",
-  "url": "https://solapursoftwaredevelopers.dominal.in/api/mcp",
-  "license": "MIT",
-  "category": "Directory & Business Data"
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.mdyahhya/solapursoftwares",
+  "version": "1.0.1",
+  "title": "Solapur Software Developers Registry",
+  "description": "Public read-only MCP HTTP gateway for the Solapur software developers registry.",
+  "websiteUrl": "https://solapursoftwaredevelopers.dominal.in",
+  "repository": {
+    "source": "github",
+    "url": "https://github.com/mdyahhya/solapursoftwares.git"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://solapursoftwaredevelopers.dominal.in/api/mcp"
+    }
+  ]
 }
